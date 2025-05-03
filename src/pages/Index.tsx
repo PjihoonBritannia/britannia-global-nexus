@@ -18,19 +18,19 @@ const Index = () => {
       
       <main className="flex-1">
         <Hero
-          title="Britannia: Global M&A and Management Advisory Leadership"
-          subtitle="EMEA-Korea 시장을 연결하는 한국 자본 기반 글로벌 자문 및 지주회사"
+          title="Global M&A and Management Advisory Leadership"
+          subtitle="Connecting EMEA-Korea markets with Korean capital expertise"
           backgroundImage="https://images.unsplash.com/photo-1460574283810-2aab119d8511?q=80"
         >
-          <div className="flex flex-wrap gap-4">
-            <Button asChild className="bg-corporate-blue hover:bg-corporate-teal">
+          <div className="flex flex-wrap gap-5">
+            <Button asChild className="bg-gray-800 hover:bg-gray-700">
               <Link to="#contact">
-                상담 문의하기
+                Request a Consultation
               </Link>
             </Button>
             <Button variant="outline" className="bg-transparent text-white border-white hover:bg-white/10" asChild>
               <Link to="/about" className="inline-flex items-center">
-                회사 소개
+                Learn More
                 <ArrowRight size={16} className="ml-2" />
               </Link>
             </Button>

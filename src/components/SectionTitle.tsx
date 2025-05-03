@@ -17,12 +17,12 @@ const SectionTitle = ({
   };
 
   return (
-    <div className={`max-w-3xl ${alignClass[align]} mb-12`}>
-      <h2 className="text-2xl md:text-3xl font-bold text-corporate-navy mb-4">
+    <div className={`max-w-3xl ${alignClass[align]} mb-16`}>
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-5">
         {title}
       </h2>
       {subtitle && (
-        <p className="text-corporate-dark-gray text-lg">
+        <p className="text-lg text-gray-700">
           {subtitle}
         </p>
       )}

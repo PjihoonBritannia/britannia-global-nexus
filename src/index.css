@@ -94,6 +94,7 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    letter-spacing: -0.015em;
   }
 
   .animate-delay-100 {
@@ -124,10 +125,10 @@
     content: '';
     position: absolute;
     width: 0;
-    height: 2px;
+    height: 1px;
     bottom: -2px;
     left: 0;
-    background-color: theme('colors.corporate.blue');
+    background-color: currentColor;
     transition: width 0.3s ease-in-out;
   }
 

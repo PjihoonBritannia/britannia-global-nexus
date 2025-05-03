@@ -62,14 +62,6 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				corporate: {
-					'navy': '#1A1F2C',
-					'blue': '#0EA5E9',
-					'teal': '#0FA0CE',
-					'gold': '#D4AF37',
-					'light-gray': '#F6F6F7',
-					'dark-gray': '#403E43',
 				}
 			},
 			fontFamily: {
@@ -113,6 +105,11 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out forwards',
+			},
+			spacing: {
+				'7': '1.75rem',
+				'14': '3.5rem',
+				'18': '4.5rem',
 			}
 		}
 	},

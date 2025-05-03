@@ -23,12 +23,12 @@ const Card = ({
   const CardContent = () => (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden",
+        "bg-white rounded-lg border border-gray-100 hover:border-gray-200 transition-all duration-300 overflow-hidden",
         className
       )}
     >
       {imageUrl && (
-        <div className="h-48 overflow-hidden">
+        <div className="h-52 overflow-hidden">
           <img
             src={imageUrl}
             alt={title}
@@ -36,14 +36,14 @@ const Card = ({
           />
         </div>
       )}
-      <div className="p-6">
-        {icon && <div className="text-corporate-blue mb-4">{icon}</div>}
-        <h3 className="text-xl font-semibold text-corporate-navy mb-2">
+      <div className="p-7">
+        {icon && <div className="text-gray-700 mb-5">{icon}</div>}
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">
           {title}
         </h3>
-        <p className="text-corporate-dark-gray mb-4">{description}</p>
+        <p className="text-gray-700 mb-5">{description}</p>
         {link && (
-          <div className="text-corporate-blue font-medium hover:text-corporate-teal">
+          <div className="text-gray-800 font-medium hover:text-gray-600">
             Learn More
           </div>
         )}

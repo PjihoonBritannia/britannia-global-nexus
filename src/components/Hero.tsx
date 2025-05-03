@@ -18,7 +18,7 @@ const Hero = ({
 }: HeroProps) => {
   return (
     <div
-      className="relative bg-corporate-navy bg-cover bg-center bg-no-repeat"
+      className="relative bg-gray-900 bg-cover bg-center bg-no-repeat"
       style={
         backgroundImage
           ? { backgroundImage: `url(${backgroundImage})` }
@@ -27,22 +27,22 @@ const Hero = ({
     >
       {overlay && (
         <div
-          className="absolute inset-0 bg-gradient-to-r from-corporate-navy/90 to-corporate-navy/60"
+          className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-900/70"
           aria-hidden="true"
         />
       )}
-      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative z-10">
+      <div className="container mx-auto px-6 py-24 md:py-32 lg:py-40 relative z-10">
         <div className="max-w-3xl">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-lg md:text-xl text-white/90 mb-6 animate-fade-in animate-delay-100">
+            <p className="text-lg md:text-xl text-white/90 mb-8 animate-fade-in animate-delay-100">
               {subtitle}
             </p>
           )}
           {children && (
-            <div className="mt-8 animate-fade-in animate-delay-200">{children}</div>
+            <div className="mt-10 animate-fade-in animate-delay-200">{children}</div>
           )}
         </div>
       </div>

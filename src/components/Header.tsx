@@ -12,36 +12,39 @@ const Header = () => {
   };
 
   return (
-    <header className="relative w-full bg-white shadow-sm">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+    <header className="relative w-full bg-white border-b border-gray-100">
+      <div className="container mx-auto px-6 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <h1 className="text-2xl font-bold text-corporate-navy">
-            <span className="text-corporate-blue">B</span>ritannia Inc.
-          </h1>
+          <img 
+            src="/lovable-uploads/0992f3de-9abe-4580-ba52-44d85d0cc000.png" 
+            alt="Britannia Inc. Logo" 
+            className="h-14 mr-3"
+          />
+          <span className="sr-only">Britannia Inc.</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/about" className="font-medium text-corporate-navy hover:text-corporate-blue link-underline">
+        <nav className="hidden md:flex items-center space-x-10">
+          <Link to="/about" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
             About
           </Link>
-          <Link to="/media" className="font-medium text-corporate-navy hover:text-corporate-blue link-underline">
+          <Link to="/media" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
             Media
           </Link>
-          <Link to="/esg" className="font-medium text-corporate-navy hover:text-corporate-blue link-underline">
+          <Link to="/esg" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
             ESG
           </Link>
-          <Link to="/careers" className="font-medium text-corporate-navy hover:text-corporate-blue link-underline">
+          <Link to="/careers" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
             Careers
           </Link>
-          <Button className="bg-corporate-blue hover:bg-corporate-teal text-white">
+          <Button className="bg-gray-800 hover:bg-gray-700 text-white">
             Contact Us
           </Button>
         </nav>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 text-corporate-navy"
+          className="md:hidden p-2 text-gray-800"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
@@ -51,38 +54,38 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute w-full bg-white z-50 shadow-lg">
-          <nav className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+        <div className="md:hidden absolute w-full bg-white z-50 border-t border-gray-100">
+          <nav className="container mx-auto px-6 py-5 flex flex-col space-y-5">
             <Link 
               to="/about" 
-              className="font-medium text-corporate-navy hover:text-corporate-blue p-2"
+              className="font-medium text-gray-800 hover:text-gray-600 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
             <Link 
               to="/media" 
-              className="font-medium text-corporate-navy hover:text-corporate-blue p-2"
+              className="font-medium text-gray-800 hover:text-gray-600 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Media
             </Link>
             <Link 
               to="/esg" 
-              className="font-medium text-corporate-navy hover:text-corporate-blue p-2"
+              className="font-medium text-gray-800 hover:text-gray-600 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
               ESG
             </Link>
             <Link 
               to="/careers" 
-              className="font-medium text-corporate-navy hover:text-corporate-blue p-2"
+              className="font-medium text-gray-800 hover:text-gray-600 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Careers
             </Link>
             <Button 
-              className="bg-corporate-blue hover:bg-corporate-teal text-white w-full"
+              className="bg-gray-800 hover:bg-gray-700 text-white w-full mt-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact Us
