@@ -1,6 +1,6 @@
 
 import SectionTitle from "./SectionTitle";
-import { Card } from "@/components/Card";
+import Card from "@/components/Card";
 import { MapPin } from "lucide-react";
 
 const UkPropertyAreas = () => {
