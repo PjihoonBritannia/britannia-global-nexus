@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Media from "./pages/Media";
 import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
+import UkProperty from "./pages/UkProperty";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/media" element={<Media />} />
           <Route path="/esg" element={<Esg />} />
           <Route path="/careers" element={<Careers />} />
+          <Route path="/uk-property" element={<UkProperty />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

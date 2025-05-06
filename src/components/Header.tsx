@@ -37,6 +37,9 @@ const Header = () => {
           <Link to="/careers" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
             Careers
           </Link>
+          <Link to="/uk-property" className="font-medium text-gray-800 hover:text-gray-600 link-underline">
+            UK Property
+          </Link>
           <Button className="bg-gray-800 hover:bg-gray-700 text-white">
             Contact Us
           </Button>
@@ -83,6 +86,13 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Careers
+            </Link>
+            <Link 
+              to="/uk-property" 
+              className="font-medium text-gray-800 hover:text-gray-600 p-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              UK Property
             </Link>
             <Button 
               className="bg-gray-800 hover:bg-gray-700 text-white w-full mt-2"
