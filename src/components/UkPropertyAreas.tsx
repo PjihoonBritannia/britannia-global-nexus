@@ -23,7 +23,7 @@ const UkPropertyAreas = () => {
   ];
 
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 md:py-30 bg-bg-cream">
       <div className="container mx-auto px-6">
         <SectionTitle 
           title="Key Areas of Focus" 
@@ -31,13 +31,13 @@ const UkPropertyAreas = () => {
           align="center"
         />
         
-        <div className="grid md:grid-cols-3 gap-8 mt-12">
+        <div className="grid md:grid-cols-3 gap-10 mt-14">
           {areas.map((area, index) => (
             <Card
               key={index}
               title={area.title}
               description={area.description}
-              icon={<MapPin size={24} />}
+              icon={<MapPin size={24} className="text-point" />}
               imageUrl={area.imageUrl}
             />
           ))}

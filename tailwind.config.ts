@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -26,12 +25,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#FF0062', // Point color
+					foreground: '#FDFBF4'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#273F4F', // Base color 2 (dark)
+					foreground: '#FDFBF4'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -62,16 +61,23 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+                // New colors
+                'point': '#FF0062',       // Point color
+                'base-light': '#FDFBF4',  // Base color 1 (light)
+                'base-dark': '#273F4F',   // Base color 2 (dark)
+                'bg-cream': '#EFEEEA',    // Background color
 			},
 			fontFamily: {
-				sans: ['Noto Sans KR', 'sans-serif'],
-				serif: ['Noto Serif KR', 'serif'],
+				sans: ['Pretendard', 'sans-serif'],
+				serif: ['Pretendard', 'serif'],
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				lg: '35px',  // Updated border radius
+				md: '35px',  // Updated border radius
+				sm: '35px',  // Updated border radius
+				'2xl': '35px', // Additional border radius
+				'xl': '35px',  // Additional border radius
 			},
 			keyframes: {
 				'accordion-down': {
@@ -110,6 +116,7 @@ export default {
 				'7': '1.75rem',
 				'14': '3.5rem',
 				'18': '4.5rem',
+				'30': '7.5rem', // Additional spacing
 			}
 		}
 	},
