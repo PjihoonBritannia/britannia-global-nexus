@@ -23,12 +23,16 @@ const Index = () => {
           backgroundImage="https://images.unsplash.com/photo-1460574283810-2aab119d8511?q=80"
         >
           <div className="flex flex-wrap gap-5">
-            <Button asChild className="bg-point hover:bg-point/90 text-white rounded-[35px]">
+            <Button asChild className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300">
               <Link to="#contact">
                 Request a Consultation
               </Link>
             </Button>
-            <Button variant="outline" className="bg-transparent text-white border-white hover:bg-white/10 rounded-[35px]" asChild>
+            <Button 
+              variant="outline" 
+              className="bg-transparent text-white border-white hover:bg-white/10 rounded-[35px]"
+              asChild
+            >
               <Link to="/about" className="inline-flex items-center">
                 Learn More
                 <ArrowRight size={16} className="ml-2" />

@@ -102,6 +102,54 @@
     @apply font-medium; /* Reduced heading font weight */
   }
 
+  /* Enhanced animations */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 98, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 0, 98, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 98, 0);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Basic animation delays */
   .animate-delay-100 {
     animation-delay: 0.1s;
   }
@@ -122,6 +170,7 @@
     animation-delay: 0.5s;
   }
 
+  /* Interactive elements */
   .link-underline {
     position: relative;
   }
@@ -140,6 +189,49 @@
   .link-underline:hover::after {
     width: 100%;
   }
+
+  /* Enhanced hover effects */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.03);
+  }
+
+  .hover-glow {
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 15px rgba(255, 0, 98, 0.5);
+  }
+  
+  /* Animation classes */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulse-soft 2s infinite;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out forwards;
+  }
+  
+  .animate-fade-in-right {
+    animation: fade-in-right 0.5s ease-out forwards;
+  }
   
   /* Add rounded corners to cards and images */
   .card, .rounded-card {
@@ -153,5 +245,35 @@
   /* Add more spacing */
   .section {
     @apply py-24 md:py-30;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #FF0062, #FF6B00);
+  }
+  
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 }

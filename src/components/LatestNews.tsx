@@ -1,11 +1,40 @@
 
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import SectionTitle from "./SectionTitle";
 import Card from "./Card";
 import { Button } from "@/components/ui/button";
 
 const LatestNews = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  
+  // Track section visibility for animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+  
   const news = [
     {
       title: "브리타니아, 유럽 기술 기업 인수 자문 성공적 완료",
@@ -31,14 +60,21 @@ const LatestNews = () => {
   ];
 
   return (
-    <section className="py-16">
+    <section 
+      ref={sectionRef}
+      className="py-24 bg-gradient-to-t from-bg-cream to-white"
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
           <SectionTitle 
-            title="미디어 & 인사이트 (News & Insights)"
+            title="News & Insights"
             subtitle="브리타니아의 최신 소식과 산업 인사이트를 확인하세요."
           />
-          <Button variant="outline" className="mt-4 md:mt-0" asChild>
+          <Button 
+            variant="outline" 
+            className="mt-4 md:mt-0 hover-lift" 
+            asChild
+          >
             <Link to="/media" className="inline-flex items-center">
               모든 뉴스 보기
               <ArrowRight size={16} className="ml-2" />
@@ -47,14 +83,42 @@ const LatestNews = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {news.map((item) => (
-            <Card
+          {news.map((item, index) => (
+            <div 
               key={item.title}
-              title={item.title}
-              description={item.description}
-              imageUrl={item.imageUrl}
-              link={item.link}
-            />
+              className={`transform transition-all duration-700 ${
+                isVisible 
+                  ? 'translate-y-0 opacity-100' 
+                  : 'translate-y-20 opacity-0'
+              }`}
+              style={{ transitionDelay: `${index * 200}ms` }}
+            >
+              <Link to={item.link} className="block group">
+                <div className="bg-white rounded-[35px] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden hover-lift">
+                  <div className="h-52 overflow-hidden">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-7">
+                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                      <Calendar size={14} className="mr-2" />
+                      <span>{item.date}</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-point transition-colors duration-300">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-700 mb-5 font-light">{item.description}</p>
+                    <div className="text-point flex items-center">
+                      <span className="mr-2">Read More</span>
+                      <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       </div>

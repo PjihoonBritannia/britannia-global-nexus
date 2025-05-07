@@ -1,18 +1,42 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
+  // Modified logo with better sizing
   const BritanniaLogo = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="45" viewBox="0 0 2573 686">
+    <svg xmlns="http://www.w3.org/2000/svg" width="140" height="40" viewBox="0 0 2573 686">
       <defs>
         <clipPath id="clip-logo">
           <rect width="2573" height="686"/>
@@ -30,31 +54,65 @@ const Header = () => {
   );
 
   return (
-    <header className="relative w-full bg-white border-b border-gray-100">
-      <div className="container mx-auto px-6 py-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
+    <header className={`fixed w-full z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-4' : 'bg-transparent py-6'
+    }`}>
+      <div className="container mx-auto px-6 flex items-center justify-between">
+        <Link 
+          to="/" 
+          className={`flex items-center transition-transform duration-300 ${
+            isScrolled ? 'scale-90' : ''
+          }`}
+        >
           <BritanniaLogo />
           <span className="sr-only">Britannia Inc.</span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-12">
-          <Link to="/about" className="font-light text-base-dark hover:text-point link-underline">
+          <Link 
+            to="/about" 
+            className={`font-light hover:text-point link-underline transition-colors duration-200 ${
+              location.pathname === '/about' ? 'text-point' : 'text-base-dark'
+            }`}
+          >
             About
           </Link>
-          <Link to="/uk-property" className="font-light text-base-dark hover:text-point link-underline">
+          <Link 
+            to="/uk-property" 
+            className={`font-light hover:text-point link-underline transition-colors duration-200 ${
+              location.pathname === '/uk-property' ? 'text-point' : 'text-base-dark'
+            }`}
+          >
             UK Property
           </Link>
-          <Link to="/media" className="font-light text-base-dark hover:text-point link-underline">
+          <Link 
+            to="/media" 
+            className={`font-light hover:text-point link-underline transition-colors duration-200 ${
+              location.pathname === '/media' ? 'text-point' : 'text-base-dark'
+            }`}
+          >
             Media
           </Link>
-          <Link to="/esg" className="font-light text-base-dark hover:text-point link-underline">
+          <Link 
+            to="/esg" 
+            className={`font-light hover:text-point link-underline transition-colors duration-200 ${
+              location.pathname === '/esg' ? 'text-point' : 'text-base-dark'
+            }`}
+          >
             ESG
           </Link>
-          <Link to="/careers" className="font-light text-base-dark hover:text-point link-underline">
+          <Link 
+            to="/careers" 
+            className={`font-light hover:text-point link-underline transition-colors duration-200 ${
+              location.pathname === '/careers' ? 'text-point' : 'text-base-dark'
+            }`}
+          >
             Careers
           </Link>
-          <Button className="bg-point hover:bg-point/90 text-white rounded-[35px]">
+          <Button 
+            className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300"
+          >
             Contact Us
           </Button>
         </nav>
@@ -71,45 +129,55 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute w-full bg-white z-50 border-t border-gray-100">
+        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-md z-50 border-t border-gray-100">
           <nav className="container mx-auto px-6 py-5 flex flex-col space-y-6">
             <Link 
               to="/about" 
-              className="font-light text-base-dark hover:text-point p-2"
+              className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                location.pathname === '/about' ? 'text-point translate-x-2' : 'text-base-dark'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
             <Link 
               to="/uk-property" 
-              className="font-light text-base-dark hover:text-point p-2"
+              className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                location.pathname === '/uk-property' ? 'text-point translate-x-2' : 'text-base-dark'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               UK Property
             </Link>
             <Link 
               to="/media" 
-              className="font-light text-base-dark hover:text-point p-2"
+              className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                location.pathname === '/media' ? 'text-point translate-x-2' : 'text-base-dark'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Media
             </Link>
             <Link 
               to="/esg" 
-              className="font-light text-base-dark hover:text-point p-2"
+              className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                location.pathname === '/esg' ? 'text-point translate-x-2' : 'text-base-dark'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               ESG
             </Link>
             <Link 
               to="/careers" 
-              className="font-light text-base-dark hover:text-point p-2"
+              className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                location.pathname === '/careers' ? 'text-point translate-x-2' : 'text-base-dark'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Careers
             </Link>
             <Button 
-              className="bg-point hover:bg-point/90 text-white w-full rounded-[35px]"
+              className="bg-point hover:bg-point/90 text-white w-full rounded-[35px] hover:shadow-lg transition-all duration-300"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact Us

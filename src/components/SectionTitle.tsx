@@ -1,4 +1,6 @@
 
+import { useEffect, useRef, useState } from "react";
+
 interface SectionTitleProps {
   title: string;
   subtitle?: string;
@@ -10,19 +12,65 @@ const SectionTitle = ({
   subtitle,
   align = "left",
 }: SectionTitleProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+
   const alignClass = {
     left: "text-left",
     center: "text-center mx-auto",
     right: "text-right ml-auto",
   };
+  
+  // Track when the title comes into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    if (titleRef.current) {
+      observer.observe(titleRef.current);
+    }
+
+    return () => {
+      if (titleRef.current) {
+        observer.unobserve(titleRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className={`max-w-3xl ${alignClass[align]} mb-16`}>
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-5">
+    <div 
+      ref={titleRef}
+      className={`max-w-3xl ${alignClass[align]} mb-16`}
+    >
+      <div className="overflow-hidden mb-3">
+        <div
+          className={`w-16 h-1 bg-point transition-all duration-700 ${
+            align === "center" ? "mx-auto" : align === "right" ? "ml-auto" : ""
+          } ${isVisible ? "w-16" : "w-0"}`}
+        ></div>
+      </div>
+      <h2 
+        className={`text-2xl md:text-3xl font-bold text-base-dark mb-5 transition-all duration-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         {title}
       </h2>
       {subtitle && (
-        <p className="text-lg text-gray-700">
+        <p 
+          className={`text-lg text-gray-700 font-light transition-all duration-700 delay-200 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
           {subtitle}
         </p>
       )}
