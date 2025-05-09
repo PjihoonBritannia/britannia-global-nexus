@@ -1,21 +1,21 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 export default {
-	darkMode: ["class"],
+	darkMode: ['class'],
 	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
+		'./pages/**/*.{ts,tsx}',
+		'./components/**/*.{ts,tsx}',
+		'./app/**/*.{ts,tsx}',
+		'./src/**/*.{ts,tsx}',
 	],
-	prefix: "",
+	prefix: '',
 	theme: {
 		container: {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1400px'
-			}
+				'2xl': '1400px',
+			},
 		},
 		extend: {
 			colors: {
@@ -26,85 +26,87 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: '#FF0062', // Point color
-					foreground: '#FDFBF4'
+					foreground: '#FDFBF4',
 				},
 				secondary: {
 					DEFAULT: '#273F4F', // Base color 2 (dark)
-					foreground: '#FDFBF4'
+					foreground: '#FDFBF4',
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+					foreground: 'hsl(var(--destructive-foreground))',
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					foreground: 'hsl(var(--muted-foreground))',
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					foreground: 'hsl(var(--accent-foreground))',
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					foreground: 'hsl(var(--popover-foreground))',
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+					foreground: 'hsl(var(--card-foreground))',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
 					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+					'primary-foreground':
+						'hsl(var(--sidebar-primary-foreground))',
 					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+					'accent-foreground':
+						'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					ring: 'hsl(var(--sidebar-ring))',
 				},
-                // New colors
-                'point': '#FF0062',       // Point color
-                'base-light': '#FDFBF4',  // Base color 1 (light)
-                'base-dark': '#273F4F',   // Base color 2 (dark)
-                'bg-cream': '#EFEEEA',    // Background color
+				// New colors
+				point: '#FF0062', // Point color
+				'base-light': '#FDFBF4', // Base color 1 (light)
+				'base-dark': '#273F4F', // Base color 2 (dark)
+				'bg-cream': 'white', // Background color
 			},
 			fontFamily: {
 				sans: ['Pretendard', 'sans-serif'],
 				serif: ['Pretendard', 'serif'],
 			},
 			borderRadius: {
-				lg: '35px',  // Updated border radius
-				md: '35px',  // Updated border radius
-				sm: '35px',  // Updated border radius
+				lg: '35px', // Updated border radius
+				md: '35px', // Updated border radius
+				sm: '35px', // Updated border radius
 				'2xl': '35px', // Additional border radius
-				'xl': '35px',  // Additional border radius
+				xl: '35px', // Additional border radius
 			},
 			keyframes: {
 				'accordion-down': {
 					from: {
-						height: '0'
+						height: '0',
 					},
 					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+						height: 'var(--radix-accordion-content-height)',
+					},
 				},
 				'accordion-up': {
 					from: {
-						height: 'var(--radix-accordion-content-height)'
+						height: 'var(--radix-accordion-content-height)',
 					},
 					to: {
-						height: '0'
-					}
+						height: '0',
+					},
 				},
 				'fade-in': {
 					'0%': {
 						opacity: '0',
-						transform: 'translateY(10px)'
+						transform: 'translateY(10px)',
 					},
 					'100%': {
 						opacity: '1',
-						transform: 'translateY(0)'
-					}
+						transform: 'translateY(0)',
+					},
 				},
 			},
 			animation: {
@@ -117,8 +119,8 @@ export default {
 				'14': '3.5rem',
 				'18': '4.5rem',
 				'30': '7.5rem', // Additional spacing
-			}
-		}
+			},
+		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require('tailwindcss-animate')],
 } satisfies Config;
