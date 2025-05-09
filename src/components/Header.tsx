@@ -24,6 +24,9 @@ const Header = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
+    // Initialize scroll state
+    handleScroll();
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };

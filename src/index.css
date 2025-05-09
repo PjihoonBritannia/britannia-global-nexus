@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 43 13% 93%; /* #EFEEEA */
+    --background: 0 0% 100%; /* Changed to white #FFFFFF */
     --foreground: 204 31% 23%; /* #273F4F */
 
     --card: 60 75% 97%; /* #FDFBF4 */
@@ -92,7 +92,7 @@
   }
 
   body {
-    @apply bg-bg-cream text-foreground font-sans;
+    @apply bg-white text-foreground font-sans; /* Changed from bg-bg-cream to bg-white */
     letter-spacing: -0.015em;
     font-weight: 300; /* Reduced font weight */
   }
