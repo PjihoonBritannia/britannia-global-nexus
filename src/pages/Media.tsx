@@ -154,14 +154,12 @@ const Media = () => {
 						<Tabs defaultValue='news' className='w-full'>
 							<div className='flex justify-center mb-8'>
 								<TabsList className='grid w-full max-w-md grid-cols-3'>
-									<TabsTrigger value='news'>
-										뉴스 및 공지
-									</TabsTrigger>
+									<TabsTrigger value='news'>News</TabsTrigger>
 									<TabsTrigger value='insights'>
-										인사이트
+										Insights
 									</TabsTrigger>
 									<TabsTrigger value='multimedia'>
-										멀티미디어
+										Media
 									</TabsTrigger>
 								</TabsList>
 							</div>
