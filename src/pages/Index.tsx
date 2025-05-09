@@ -45,7 +45,7 @@ const Index = () => {
 				</Hero>
 
 				{/* All content sections with consistent vertical spacing */}
-				<div className='space-y-20'>
+				<div>
 					<BusinessAreas />
 
 					<LatestNews />
