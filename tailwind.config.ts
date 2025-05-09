@@ -68,7 +68,7 @@ export default {
 				point: '#FF0062', // Point color
 				'base-light': '#FDFBF4', // Base color 1 (light)
 				'base-dark': '#273F4F', // Base color 2 (dark)
-				'bg-cream': 'white', // Background color
+				'bg-cream': '#EFEFEF', // Background color
 			},
 			fontFamily: {
 				sans: ['Pretendard', 'sans-serif'],
