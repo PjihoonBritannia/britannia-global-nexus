@@ -6,6 +6,7 @@ interface AnimatedCounterProps {
   duration?: number;
   prefix?: string;
   suffix?: string;
+  title?: string;
 }
 
 const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ 
@@ -13,6 +14,7 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   duration = 2000,
   prefix = '',
   suffix = '',
+  title,
 }) => {
   const [count, setCount] = useState(0);
   const counterRef = useRef<HTMLDivElement>(null);
@@ -67,8 +69,11 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   };
   
   return (
-    <div ref={counterRef}>
-      {prefix}{count}{suffix}
+    <div ref={counterRef} className="text-center">
+      <div className="text-4xl font-bold text-point mb-2">
+        {prefix}{count}{suffix}
+      </div>
+      {title && <p className="text-gray-700">{title}</p>}
     </div>
   );
 };

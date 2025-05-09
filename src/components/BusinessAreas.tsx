@@ -69,9 +69,9 @@ const BusinessAreas = () => {
         
         {/* Stats Counter */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16 mt-8">
-          <AnimatedCounter end={150} suffix="+" title="Successful M&A Deals" />
-          <AnimatedCounter end={25} suffix="+" title="Countries with Active Projects" />
-          <AnimatedCounter end={98} suffix="%" title="Client Satisfaction Rate" />
+          <AnimatedCounter value={150} suffix="+" title="Successful M&A Deals" />
+          <AnimatedCounter value={25} suffix="+" title="Countries with Active Projects" />
+          <AnimatedCounter value={98} suffix="%" title="Client Satisfaction Rate" />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
