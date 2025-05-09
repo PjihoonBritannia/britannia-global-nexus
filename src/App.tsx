@@ -11,6 +11,7 @@ import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
 import UkProperty from "./pages/UkProperty";
 import NotFound from "./pages/NotFound";
+import AdvancedHeader from "./components/AdvancedHeader";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AdvancedHeader />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
@@ -27,7 +29,6 @@ const App = () => (
           <Route path="/media" element={<Media />} />
           <Route path="/esg" element={<Esg />} />
           <Route path="/careers" element={<Careers />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
