@@ -75,11 +75,11 @@ export default {
 				serif: ['Pretendard', 'serif'],
 			},
 			borderRadius: {
-				lg: '35px', // Updated border radius
-				md: '35px', // Updated border radius
-				sm: '35px', // Updated border radius
-				'2xl': '35px', // Additional border radius
-				xl: '35px', // Additional border radius
+				lg: '20px', // Updated border radius
+				md: '20px', // Updated border radius
+				sm: '20px', // Updated border radius
+				'2xl': '20px', // Additional border radius
+				xl: '20px', // Additional border radius
 			},
 			keyframes: {
 				'accordion-down': {
