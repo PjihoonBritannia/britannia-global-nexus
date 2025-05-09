@@ -63,26 +63,6 @@ const AdvancedHeader = () => {
     }
   };
 
-  // Calculate header class
-  let headerClasses = "fixed w-full z-50 transition-all duration-500";
-  
-  // Mobile-specific header styling
-  if (isMobile) {
-    headerClasses += isMenuOpen
-      ? " bg-white shadow-md py-4"
-      : isScrolled 
-        ? " bg-white/90 backdrop-blur-md shadow-md py-4" 
-        : " bg-transparent py-6";
-  } 
-  // Desktop-specific header styling with multi-state transformation
-  else {
-    if (isScrolled) {
-      headerClasses = `fixed top-0 left-0 w-full z-50 flex justify-center transition-all duration-500 ${isExpanded ? "pointer-events-auto" : "pointer-events-none"}`;
-    } else {
-      headerClasses += " bg-transparent py-6";
-    }
-  }
-
   // Text color class for nav links
   const navLinkClass = (path) => {
     if (isMobile && isMenuOpen) {
@@ -99,125 +79,152 @@ const AdvancedHeader = () => {
   return (
     <header 
       ref={headerRef}
-      className={headerClasses}
-      onMouseEnter={handleHeaderMouseEnter}
-      onMouseLeave={handleHeaderMouseLeave}
+      className="fixed w-full z-50"
+      style={{ pointerEvents: isScrolled && !isMobile ? 'none' : 'auto' }}
     >
+      {/* Only render one header based on scroll state */}
       {isScrolled && !isMobile ? (
         // Condensed floating header for desktop when scrolled
         <div 
-          className={`header-scrolled ${isExpanded ? "header-expanded" : ""} pointer-events-auto`}
+          className="flex justify-center w-full transition-all duration-500"
+          onMouseEnter={handleHeaderMouseEnter}
+          onMouseLeave={handleHeaderMouseLeave}
+          style={{ pointerEvents: 'auto' }}
         >
-          {/* Navigation Dots (shown when condensed) */}
-          <div className={`nav-dots ${isExpanded ? "hidden" : "flex"}`}>
-            {navItems.map((item, index) => (
-              <Link
-                key={`dot-${index}`}
-                to={item.path}
-                aria-label={item.label}
-                className={`nav-dot ${location.pathname === item.path ? 'active' : ''}`}
+          <div 
+            className={`
+              bg-white/90 backdrop-blur-md shadow-md 
+              rounded-full mt-4 transition-all duration-500
+              flex items-center justify-between
+              ${isExpanded ? 'w-auto px-10 py-4' : 'w-[400px] py-3 px-6'}
+            `}
+          >
+            {/* Always show logo, sized appropriately */}
+            <Link to="/" className="flex items-center">
+              <img 
+                src="/logo_black.svg" 
+                alt="Britannia Inc." 
+                className={`transition-all duration-300 ${isExpanded ? 'w-[120px]' : 'w-[80px]'}`}
               />
-            ))}
-          </div>
-          
-          {/* Text Navigation (shown when expanded) */}
-          <nav className={`hidden ${isExpanded ? "md:flex" : ""} items-center space-x-8 transition-all duration-500`}>
-            <Link 
-              to="/" 
-              className="flex items-center mr-8"
-            >
-              <img src="/logo_black.svg" alt="Britannia Inc." className="h-10 w-auto" />
               <span className="sr-only">Britannia Inc.</span>
             </Link>
-            
-            {navItems.map((item, index) => (
-              <Link 
-                key={`nav-${index}`}
-                to={item.path} 
-                className={`font-light link-underline transition-colors duration-200 ${
-                  location.pathname === item.path ? 'text-point' : 'text-base-dark'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-            
-            <Button 
-              className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300 ml-4"
-            >
-              Contact Us
-            </Button>
-          </nav>
+
+            {/* Navigation: show dots or text based on expanded state */}
+            <div className="ml-4">
+              {isExpanded ? (
+                // Text Navigation (shown when expanded)
+                <nav className="flex items-center space-x-8 transition-all duration-500">
+                  {navItems.map((item, index) => (
+                    <Link 
+                      key={`nav-${index}`}
+                      to={item.path} 
+                      className={`font-light link-underline transition-colors duration-200 ${
+                        location.pathname === item.path ? 'text-point' : 'text-base-dark'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  
+                  <Button 
+                    className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300 ml-4"
+                  >
+                    Contact Us
+                  </Button>
+                </nav>
+              ) : (
+                // Navigation Dots (shown when condensed)
+                <div className="flex space-x-3 justify-center items-center">
+                  {navItems.map((item, index) => (
+                    <Link
+                      key={`dot-${index}`}
+                      to={item.path}
+                      aria-label={item.label}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        location.pathname === item.path ? 'w-3 h-3 bg-point' : 'bg-base-dark'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       ) : (
         // Standard header for mobile or desktop at top
-        <div className="container mx-auto px-6 flex items-center justify-between">
-          <Link 
-            to="/" 
-            className={`flex items-center transition-transform duration-300 ${
-              isScrolled ? 'scale-90' : ''
-            }`}
-          >
-            <img 
-              src={isScrolled || (isMobile && isMenuOpen) ? "/logo_black.svg" : "/logo_white.svg"} 
-              alt="Britannia Inc." 
-              className="h-10 w-auto transition-opacity duration-300" 
-            />
-            <span className="sr-only">Britannia Inc.</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-12">
-            {navItems.map((item, index) => (
-              <Link 
-                key={`std-nav-${index}`}
-                to={item.path} 
-                className={`font-light link-underline transition-colors duration-200 ${navLinkClass(item.path)}`}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Button 
-              className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300"
+        <div className={`
+          w-full transition-all duration-300
+          ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-4' : 'bg-transparent py-6'}
+          ${isMobile && isMenuOpen && !isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : ''}
+        `}>
+          <div className="container mx-auto px-6 flex items-center justify-between">
+            <Link 
+              to="/" 
+              className={`flex items-center transition-transform duration-300 ${
+                isScrolled ? 'scale-90' : ''
+              }`}
             >
-              Contact Us
-            </Button>
-          </nav>
+              <img 
+                src={isScrolled || (isMobile && isMenuOpen) ? "/logo_black.svg" : "/logo_white.svg"} 
+                alt="Britannia Inc." 
+                className="h-10 w-auto transition-opacity duration-300" 
+              />
+              <span className="sr-only">Britannia Inc.</span>
+            </Link>
 
-          {/* Mobile Menu Button */}
-          <button
-            className={`md:hidden p-2 ${(isScrolled || isMenuOpen) ? 'text-base-dark' : 'text-white'}`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      )}
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && isMobile && (
-        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-md z-50 border-t border-gray-100">
-          <nav className="container mx-auto px-6 py-5 flex flex-col space-y-6">
-            {navItems.map((item, index) => (
-              <Link 
-                key={`mobile-nav-${index}`}
-                to={item.path} 
-                className={`font-light hover:text-point p-2 transition-all duration-200 ${
-                  location.pathname === item.path ? 'text-point translate-x-2' : 'text-base-dark'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-12">
+              {navItems.map((item, index) => (
+                <Link 
+                  key={`std-nav-${index}`}
+                  to={item.path} 
+                  className={`font-light link-underline transition-colors duration-200 ${navLinkClass(item.path)}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Button 
+                className="bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300"
               >
-                {item.label}
-              </Link>
-            ))}
-            <Button 
-              className="bg-point hover:bg-point/90 text-white w-full rounded-[35px] hover:shadow-lg transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
+                Contact Us
+              </Button>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              className={`md:hidden p-2 ${(isScrolled || (isMenuOpen && !isScrolled)) ? 'text-base-dark' : 'text-white'}`}
+              onClick={toggleMenu}
+              aria-label="Toggle menu"
             >
-              Contact Us
-            </Button>
-          </nav>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && isMobile && (
+            <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-md z-50 border-t border-gray-100">
+              <nav className="container mx-auto px-6 py-5 flex flex-col space-y-6">
+                {navItems.map((item, index) => (
+                  <Link 
+                    key={`mobile-nav-${index}`}
+                    to={item.path} 
+                    className={`font-light hover:text-point p-2 transition-all duration-200 ${
+                      location.pathname === item.path ? 'text-point translate-x-2' : 'text-base-dark'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <Button 
+                  className="bg-point hover:bg-point/90 text-white w-full rounded-[35px] hover:shadow-lg transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact Us
+                </Button>
+              </nav>
+            </div>
+          )}
         </div>
       )}
     </header>
