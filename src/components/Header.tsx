@@ -54,8 +54,8 @@ const Header = () => {
 					<img
 						src={
 							isScrolled || (isMenuOpen && !isScrolled)
-								? 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/logo_black.svg'
-								: 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/logo_white.svg'
+								? 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_black.svg'
+								: 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_white.svg'
 						}
 						alt='Britannia Inc.'
 						className='h-10 w-auto transition-opacity duration-300'

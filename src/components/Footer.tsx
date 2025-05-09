@@ -13,7 +13,7 @@ const Footer = () => {
 					<div>
 						<div className='mb-5'>
 							<img
-								src='https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/logo_white.svg'
+								src='https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_white.svg'
 								alt='Britannia Inc.'
 								className='w-44 h-auto'
 							/>
