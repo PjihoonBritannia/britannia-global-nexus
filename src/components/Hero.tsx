@@ -78,26 +78,7 @@ const Hero = ({
         </div>
       </div>
       
-      {/* Animated scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-        <span className="text-white/70 text-sm mb-2 animate-bounce">Scroll</span>
-        <svg 
-          width="20" 
-          height="30" 
-          viewBox="0 0 20 30" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
-          className="animate-bounce"
-        >
-          <path 
-            d="M10 1V29M10 29L1 20M10 29L19 20" 
-            stroke="white" 
-            strokeOpacity="0.7" 
-            strokeWidth="2" 
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
+      {/* Removed the animated scroll indicator (wave-like decoration) that was here */}
     </div>
   );
 };

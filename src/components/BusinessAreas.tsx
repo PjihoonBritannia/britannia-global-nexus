@@ -58,7 +58,7 @@ const BusinessAreas = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-24 bg-gradient-to-b from-bg-cream to-base-light"
+      className="py-32 bg-gradient-to-b from-bg-cream to-base-light min-h-[800px] flex items-center"
     >
       <div className="container mx-auto px-4">
         <SectionTitle 
@@ -78,7 +78,7 @@ const BusinessAreas = () => {
           {services.map((service, index) => (
             <div 
               key={service.title}
-              className={`transform transition-all duration-700 ${
+              className={`transform transition-all duration-700 h-full ${
                 isVisible 
                   ? 'translate-y-0 opacity-100' 
                   : 'translate-y-20 opacity-0'

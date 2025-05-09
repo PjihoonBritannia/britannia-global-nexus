@@ -26,7 +26,7 @@ const Card = ({
   const CardContent = () => (
     <div
       className={cn(
-        "bg-white rounded-lg border border-gray-100 transition-all duration-300 overflow-hidden hover-lift",
+        "bg-white rounded-[35px] border border-gray-100 transition-all duration-300 overflow-hidden hover-lift h-full flex flex-col",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -44,7 +44,7 @@ const Card = ({
           />
         </div>
       )}
-      <div className="p-7">
+      <div className="p-7 flex flex-col flex-grow">
         {icon && (
           <div className={`text-point mb-5 transition-transform duration-300 ${
             isHovered ? 'transform -translate-y-1' : ''
@@ -55,10 +55,12 @@ const Card = ({
         <h3 className="text-xl font-semibold text-gray-900 mb-3">
           {title}
         </h3>
-        <p className="text-gray-700 mb-5 font-light">{description}</p>
+        <p className="text-gray-700 mb-5 font-light flex-grow">
+          {description}
+        </p>
         {link && (
           <div 
-            className={`text-point font-medium flex items-center transition-all duration-300 ${
+            className={`text-point font-medium flex items-center transition-all duration-300 mt-auto ${
               isHovered ? 'translate-x-1' : ''
             }`}
           >
@@ -77,7 +79,7 @@ const Card = ({
 
   if (link) {
     return (
-      <Link to={link} className="block">
+      <Link to={link} className="block h-full">
         <CardContent />
       </Link>
     );

@@ -41,15 +41,18 @@ const Index = () => {
           </div>
         </Hero>
 
-        <BusinessAreas />
-        
-        <LatestNews />
-        
-        <EsgHighlight />
-        
-        <CareersCTA />
-        
-        <ContactSection />
+        {/* All content sections with consistent vertical spacing */}
+        <div className="space-y-20">
+          <BusinessAreas />
+          
+          <LatestNews />
+          
+          <EsgHighlight />
+          
+          <CareersCTA />
+          
+          <ContactSection />
+        </div>
       </main>
       
       <Footer />
