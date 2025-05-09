@@ -34,7 +34,7 @@
 		--input: 43 13% 85%; /* Darker version of #EFEEEA */
 		--ring: 342 100% 50%; /* #FF0062 */
 
-		--radius: 35px; /* Global border radius */
+		--radius: 15px; /* Global border radius */
 
 		--sidebar-background: 0 0% 98%;
 		--sidebar-foreground: 240 5.3% 26.1%;
