@@ -11,7 +11,7 @@ import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
 import UkProperty from "./pages/UkProperty";
 import NotFound from "./pages/NotFound";
-import AdvancedHeader from "./components/AdvancedHeader";
+import Header from "./components/Header";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AdvancedHeader />
+        <Header />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />

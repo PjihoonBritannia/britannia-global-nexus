@@ -282,14 +282,12 @@
   @apply py-24 md:py-28 lg:py-32;
 }
 
-/* Advanced header styles for PC transformation */
-.nav-dot {
-  @apply w-2 h-2 rounded-full bg-base-dark transition-all duration-300;
+/* Remove section margins - per revised instructions */
+.section + .section {
+  @apply mt-0;
 }
 
-.nav-dot.active {
-  @apply w-3 h-3 bg-point;
-}
+/* Navigation dots styling - removed as per instructions */
 
 /* Mobile menu transition */
 .mobile-menu-enter {
