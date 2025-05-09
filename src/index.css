@@ -240,12 +240,12 @@
 	/* Add rounded corners to cards and images */
 	.card,
 	.rounded-card {
-		@apply rounded-[35px];
+		@apply rounded-[15px];
 	}
 
 	.button,
 	.btn {
-		@apply rounded-[35px];
+		@apply rounded-[15px];
 	}
 
 	/* Add more spacing - INCREASED INTERNAL PADDING */
@@ -325,11 +325,11 @@
 }
 
 .content-card {
-	@apply bg-white rounded-[35px] p-8 shadow-sm hover:shadow-md transition-shadow duration-300;
+	@apply bg-white rounded-[15px] p-8 shadow-sm hover:shadow-md transition-shadow duration-300;
 }
 
 .content-image {
-	@apply rounded-[35px] overflow-hidden mb-6;
+	@apply rounded-[15px] overflow-hidden mb-6;
 }
 
 .content-image img {
