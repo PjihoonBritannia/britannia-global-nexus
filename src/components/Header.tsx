@@ -139,7 +139,7 @@ const Header = () => {
 					>
 						Careers
 					</Link>
-					<Button className='bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300'>
+					<Button className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'>
 						Contact Us
 					</Button>
 				</nav>
@@ -229,7 +229,7 @@ const Header = () => {
 							Careers
 						</Link>
 						<Button
-							className='bg-point hover:bg-point/90 text-white w-full rounded-[35px] hover:shadow-lg transition-all duration-300'
+							className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
 							onClick={() => setIsMenuOpen(false)}
 						>
 							Contact Us

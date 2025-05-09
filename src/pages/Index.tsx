@@ -24,13 +24,13 @@ const Index = () => {
 					<div className='flex flex-wrap gap-5'>
 						<Button
 							asChild
-							className='bg-point hover:bg-point/90 text-white rounded-[35px] hover:shadow-lg transition-shadow duration-300'
+							className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'
 						>
 							<Link to='#contact'>Request a Consultation</Link>
 						</Button>
 						<Button
 							variant='outline'
-							className='bg-transparent text-white border-white hover:bg-white/10 rounded-[35px]'
+							className='bg-transparent text-white border-white hover:bg-white/10 rounded-[15px]'
 							asChild
 						>
 							<Link

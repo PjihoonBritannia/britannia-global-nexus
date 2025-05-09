@@ -62,7 +62,7 @@ const ContactSection = () => {
 
 				<div className='grid grid-cols-1 lg:grid-cols-2 gap-12 mt-16 max-w-6xl mx-auto'>
 					{/* Contact Info */}
-					<div className='space-y-12 bg-white rounded-[35px] p-10 shadow-sm'>
+					<div className='space-y-12 bg-white rounded-[15px] p-10 shadow-sm'>
 						<div>
 							<h3 className='text-xl font-medium mb-6 text-base-dark'>
 								Our Offices
@@ -169,7 +169,7 @@ const ContactSection = () => {
 					</div>
 
 					{/* Contact Form */}
-					<div className='bg-white rounded-[35px] p-10 shadow-md border border-gray-100'>
+					<div className='bg-white rounded-[15px] p-10 shadow-md border border-gray-100'>
 						<h3 className='text-xl font-medium mb-6 text-base-dark'>
 							Send a Message
 						</h3>

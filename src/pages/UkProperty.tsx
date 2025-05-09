@@ -33,13 +33,13 @@ const UkProperty = () => {
 					<div className='flex flex-wrap gap-5'>
 						<Button
 							asChild
-							className='bg-point hover:bg-point/90 text-white rounded-[35px]'
+							className='bg-point hover:bg-point/90 text-white rounded-[15px]'
 						>
 							<a href='#contact'>Request Consultation</a>
 						</Button>
 						<Button
 							variant='outline'
-							className='bg-transparent text-white border-white hover:bg-white/10 rounded-[35px]'
+							className='bg-transparent text-white border-white hover:bg-white/10 rounded-[15px]'
 							asChild
 						>
 							<a

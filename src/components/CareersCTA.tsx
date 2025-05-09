@@ -75,7 +75,7 @@ const CareersCTA = () => {
 						Cultivate Global Financial Expertise
 					</h2>
 
-					<div className='bg-white/10 backdrop-blur-sm p-6 rounded-[35px] mb-8'>
+					<div className='bg-white/10 backdrop-blur-sm p-6 rounded-[15px] mb-8'>
 						<p className='text-xl text-white/90 italic font-medium'>
 							"Do you want to develop your career at the center of
 							cross-border M&A Deals?"

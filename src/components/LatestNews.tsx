@@ -99,7 +99,7 @@ const LatestNews = () => {
 							style={{ transitionDelay: `${index * 200}ms` }}
 						>
 							<Link to={item.link} className='block group'>
-								<div className='bg-white rounded-[35px] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden hover-lift'>
+								<div className='bg-white rounded-[15px] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden hover-lift'>
 									<div className='h-52 overflow-hidden'>
 										<img
 											src={item.imageUrl}

@@ -109,7 +109,7 @@ const EsgHighlight = () => {
 						))}
 					</div>
 
-					<div className='bg-white/10 backdrop-blur-sm rounded-[35px] p-10 mb-10 transition-all duration-500'>
+					<div className='bg-white/10 backdrop-blur-sm rounded-[15px] p-10 mb-10 transition-all duration-500'>
 						<div className='flex flex-col items-center mb-6'>
 							<div
 								className={`text-point mb-4 transform transition-all duration-300 ${

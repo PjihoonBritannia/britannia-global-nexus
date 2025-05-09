@@ -94,7 +94,7 @@ const UkPropertyAreas = () => {
 
 				{/* Interactive Map Element */}
 				<div
-					className={`mt-20 p-8 bg-white rounded-[35px] shadow-lg hover-lift transition-all duration-500 relative overflow-hidden ${
+					className={`mt-20 p-8 bg-white rounded-[15px] shadow-lg hover-lift transition-all duration-500 relative overflow-hidden ${
 						isVisible
 							? 'opacity-100 translate-y-0'
 							: 'opacity-0 translate-y-20'
