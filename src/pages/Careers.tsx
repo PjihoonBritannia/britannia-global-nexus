@@ -372,7 +372,7 @@ const Careers = () => {
 								{applicationSteps.map((step) => (
 									<div
 										key={step.step}
-										className='bg-white p-6 rounded-lg border-gray-50'
+										className='bg-white p-6 rounded-lg border-gray-50 border-solid border-2'
 									>
 										<div className='w-10 h-10 rounded-full bg-gray-50 bg-corporate-blue text-secondary flex items-center justify-center font-bold mb-4'>
 											{step.step}
