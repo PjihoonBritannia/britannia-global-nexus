@@ -101,7 +101,7 @@ const Header = () => {
 								: 'text-white hover:text-white/80'
 						}`}
 					>
-						UK Property
+						Property
 					</Link>
 					<Link
 						to='/media'
