@@ -98,7 +98,7 @@ export const initiateWordPressOAuth = async (): Promise<void> => {
     authUrl.searchParams.append("response_type", "code");
     authUrl.searchParams.append("client_id", WP_OAUTH_CLIENT_ID);
     authUrl.searchParams.append("redirect_uri", WP_OAUTH_REDIRECT_URI);
-    authUrl.searchParams.append("scope", "openid profile email");
+    authUrl.searchParams.append("scope", "basic");
     authUrl.searchParams.append("state", state);
     
     const authUrlString = authUrl.toString();
