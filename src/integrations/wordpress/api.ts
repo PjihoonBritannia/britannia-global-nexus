@@ -1,6 +1,7 @@
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 // WordPress API configuration
 const DEFAULT_WP_API_URL = "https://britannia.co.kr/wp-json/wp/v2";
@@ -21,7 +22,7 @@ interface WordPressSettings {
 interface ApiLogEntry {
   request_method: string;
   request_url: string;
-  request_headers?: Record<string, any>;
+  request_headers?: Json;
   response_status: number;
   response_body?: string;
   timestamp?: string;
@@ -313,4 +314,3 @@ export const fetchWordPressApiLogs = async (limit = 20) => {
     return [];
   }
 };
-

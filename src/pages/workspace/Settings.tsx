@@ -26,6 +26,7 @@ import {
   updateWordPressSettings,
   fetchWordPressApiLogs
 } from '@/integrations/wordpress/api';
+import { Json } from '@/integrations/supabase/types';
 
 interface Setting {
   id: string;
@@ -46,7 +47,7 @@ interface ApiLog {
   id: string;
   request_method: string;
   request_url: string;
-  request_headers?: Record<string, unknown>;
+  request_headers?: Json;
   response_status: number;
   response_body?: string;
   timestamp: string;
@@ -148,7 +149,7 @@ const WorkspaceSettings = () => {
     try {
       setLogsLoading(true);
       const logs = await fetchWordPressApiLogs();
-      setApiLogs(logs);
+      setApiLogs(logs as ApiLog[]);
     } catch (error) {
       console.error('Error fetching API logs:', error);
     } finally {
