@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -50,6 +49,41 @@ const AppRoutes = () => {
   const { pathname } = useLocation();
   const isWorkspace = pathname.startsWith('/workspace');
 
+  // Define Footer props
+  const footerProps = {
+    footerTabs: [
+      {
+        title: "Company",
+        links: [
+          { text: "About Us", to: "/about" },
+          { text: "ESG", to: "/esg" },
+          { text: "Careers", to: "/careers" },
+        ],
+      },
+      {
+        title: "Business",
+        links: [
+          { text: "UK Property", to: "/uk-property" },
+          { text: "Contents", to: "/contents" },
+        ],
+      },
+      {
+        title: "Resources",
+        links: [
+          { text: "Media", to: "/media" },
+        ],
+      },
+    ],
+    contactEmail: "contact@britannia.co.kr",
+    contactPhone: "+82 2-1234-5678",
+    address: "123 Britannia Road, Seoul, South Korea",
+    socialLinks: [
+      { icon: "linkedin", to: "https://www.linkedin.com/company/britannia-inc" },
+      { icon: "twitter", to: "https://twitter.com/britannia_inc" },
+    ],
+    copyrightText: "© 2025 Britannia Inc. All Rights Reserved.",
+  };
+
   return (
     <>
       <ScrollToTop />
@@ -77,7 +111,7 @@ const AppRoutes = () => {
         
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isWorkspace && <Footer />}
+      {!isWorkspace && <Footer {...footerProps} />}
     </>
   );
 };
