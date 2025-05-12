@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -40,6 +39,9 @@ interface UserData {
   roles?: string[];
 }
 
+// Define the user role type to match the database enum
+type UserRole = 'admin' | 'editor' | 'viewer';
+
 const WorkspaceAccounts = () => {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ const WorkspaceAccounts = () => {
     password: '',
     full_name: '',
     avatar_url: '',
-    role: 'viewer'
+    role: 'viewer' as UserRole // Type the role correctly
   });
   
   useEffect(() => {
@@ -139,10 +141,10 @@ const WorkspaceAccounts = () => {
       if (error) throw error;
       
       if (data.user) {
-        // Add role
+        // Add role - ensure we're using the correctly typed role value
         await supabase.from('user_roles').insert({
           user_id: data.user.id,
-          role: newUser.role
+          role: newUser.role // This should now be properly typed
         });
         
         toast.success('User created successfully');
@@ -152,7 +154,7 @@ const WorkspaceAccounts = () => {
           password: '',
           full_name: '',
           avatar_url: '',
-          role: 'viewer'
+          role: 'viewer' as UserRole
         });
         fetchUsers();
       }
@@ -385,7 +387,7 @@ const WorkspaceAccounts = () => {
                 id="role"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={newUser.role}
-                onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+                onChange={(e) => setNewUser({...newUser, role: e.target.value as UserRole})}
               >
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
