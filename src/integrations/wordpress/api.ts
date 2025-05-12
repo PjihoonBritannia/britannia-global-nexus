@@ -22,9 +22,13 @@ interface ApiLogEntry {
   request_method: string;
   request_url: string;
   request_headers?: Json;
+  request_body?: string;
   response_status: number;
+  response_headers?: Json;
   response_body?: string;
   timestamp?: string;
+  log_type?: string;
+  error?: string;
 }
 
 // Helper function to get WordPress settings from Supabase
@@ -63,12 +67,21 @@ export const getWordPressSettings = async (): Promise<WordPressSettings> => {
 const maskSensitiveHeaders = (headers: Record<string, string>) => {
   const maskedHeaders = { ...headers };
   
-  // Mask authorization header
+  // Mask authorization header but preserve more diagnostic information
   if (maskedHeaders.authorization || maskedHeaders.Authorization) {
     const authHeader = maskedHeaders.authorization || maskedHeaders.Authorization;
     if (authHeader.toLowerCase().startsWith('bearer ')) {
-      maskedHeaders.authorization = 'Bearer <masked_token>';
+      // For OAuth tokens, preserve token structure but mask the actual value
+      const tokenParts = authHeader.split(' ');
+      if (tokenParts.length > 1 && tokenParts[1].length > 8) {
+        const tokenPrefix = tokenParts[1].substring(0, 4);
+        const tokenSuffix = tokenParts[1].substring(tokenParts[1].length - 4);
+        maskedHeaders.authorization = `Bearer ${tokenPrefix}...${tokenSuffix}`;
+      } else {
+        maskedHeaders.authorization = 'Bearer <masked_token>';
+      }
     } else if (authHeader.toLowerCase().startsWith('basic ')) {
+      // For Basic auth, preserve structure but mask value
       maskedHeaders.authorization = 'Basic <masked_credentials>';
     }
   }
@@ -77,7 +90,9 @@ const maskSensitiveHeaders = (headers: Record<string, string>) => {
 };
 
 // Helper function to mask sensitive information in request body
-const maskSensitiveBody = (body: string) => {
+const maskSensitiveBody = (body: string): string => {
+  if (!body) return '';
+  
   try {
     // Try to parse as JSON first
     const parsedBody = JSON.parse(body);
@@ -86,27 +101,112 @@ const maskSensitiveBody = (body: string) => {
     if (parsedBody.password) parsedBody.password = '********';
     if (parsedBody.client_secret) parsedBody.client_secret = '********';
     if (parsedBody.app_password) parsedBody.app_password = '********';
+    // For OAuth flows, preserve the structure but mask values
+    if (parsedBody.code) {
+      if (parsedBody.code.length > 8) {
+        const codePrefix = parsedBody.code.substring(0, 4);
+        const codeSuffix = parsedBody.code.substring(parsedBody.code.length - 4);
+        parsedBody.code = `${codePrefix}...${codeSuffix}`;
+      }
+    }
+    if (parsedBody.access_token) {
+      if (parsedBody.access_token.length > 8) {
+        const tokenPrefix = parsedBody.access_token.substring(0, 4);
+        const tokenSuffix = parsedBody.access_token.substring(parsedBody.access_token.length - 4);
+        parsedBody.access_token = `${tokenPrefix}...${tokenSuffix}`;
+      } else {
+        parsedBody.access_token = '<masked_token>';
+      }
+    }
+    if (parsedBody.token) {
+      if (parsedBody.token.length > 8) {
+        const tokenPrefix = parsedBody.token.substring(0, 4);
+        const tokenSuffix = parsedBody.token.substring(parsedBody.token.length - 4);
+        parsedBody.token = `${tokenPrefix}...${tokenSuffix}`;
+      } else {
+        parsedBody.token = '<masked_token>';
+      }
+    }
     
     return JSON.stringify(parsedBody);
   } catch (e) {
     // If not JSON, try to mask URL encoded form data
-    if (body.includes('client_secret=')) {
-      body = body.replace(/client_secret=[^&]+/, 'client_secret=********');
-    }
-    if (body.includes('password=')) {
-      body = body.replace(/password=[^&]+/, 'password=********');
-    }
-    if (body.includes('app_password=')) {
-      body = body.replace(/app_password=[^&]+/, 'app_password=********');
+    let maskedBody = body;
+    
+    // For URL encoded data, mask sensitive values
+    if (maskedBody.includes('client_secret=')) {
+      // Extract and mask client_secret
+      const clientSecretMatch = maskedBody.match(/client_secret=([^&]+)/);
+      if (clientSecretMatch && clientSecretMatch[1]) {
+        const secret = clientSecretMatch[1];
+        if (secret.length > 8) {
+          const secretPrefix = secret.substring(0, 4);
+          const secretSuffix = secret.substring(secret.length - 4);
+          maskedBody = maskedBody.replace(/client_secret=[^&]+/, `client_secret=${secretPrefix}...${secretSuffix}`);
+        } else {
+          maskedBody = maskedBody.replace(/client_secret=[^&]+/, 'client_secret=********');
+        }
+      }
     }
     
-    return body;
+    if (maskedBody.includes('code=')) {
+      // Extract and mask authorization code
+      const codeMatch = maskedBody.match(/code=([^&]+)/);
+      if (codeMatch && codeMatch[1]) {
+        const code = codeMatch[1];
+        if (code.length > 8) {
+          const codePrefix = code.substring(0, 4);
+          const codeSuffix = code.substring(code.length - 4);
+          maskedBody = maskedBody.replace(/code=[^&]+/, `code=${codePrefix}...${codeSuffix}`);
+        }
+      }
+    }
+    
+    if (maskedBody.includes('password=')) {
+      maskedBody = maskedBody.replace(/password=[^&]+/, 'password=********');
+    }
+    
+    if (maskedBody.includes('app_password=')) {
+      maskedBody = maskedBody.replace(/app_password=[^&]+/, 'app_password=********');
+    }
+    
+    if (maskedBody.includes('token=')) {
+      // Extract and mask token
+      const tokenMatch = maskedBody.match(/token=([^&]+)/);
+      if (tokenMatch && tokenMatch[1]) {
+        const token = tokenMatch[1];
+        if (token.length > 8) {
+          const tokenPrefix = token.substring(0, 4);
+          const tokenSuffix = token.substring(token.length - 4);
+          maskedBody = maskedBody.replace(/token=[^&]+/, `token=${tokenPrefix}...${tokenSuffix}`);
+        } else {
+          maskedBody = maskedBody.replace(/token=[^&]+/, 'token=********');
+        }
+      }
+    }
+    
+    return maskedBody;
   }
 };
 
+// Helper function to extract headers from Response object
+const extractResponseHeaders = (response: Response): Record<string, string> => {
+  const headers: Record<string, string> = {};
+  response.headers.forEach((value, name) => {
+    headers[name] = value;
+  });
+  return headers;
+};
+
 // Helper function to log API requests to Supabase
-export const logApiRequest = async (request: any, response: any) => {
+export const logApiRequest = async (
+  request: any,
+  response: any,
+  logType: string = 'API Request'
+) => {
   try {
+    console.log(`[${logType}] Logging request to ${request.url}`);
+    
     // Keep only the most recent 30 logs
     const { data: existingLogs, error: countError } = await supabase
       .from('wordpress_api_logs')
@@ -132,20 +232,43 @@ export const logApiRequest = async (request: any, response: any) => {
     // Mask sensitive data in headers and response
     const maskedHeaders = request.headers ? maskSensitiveHeaders(request.headers) : {};
     
-    let maskedResponseBody = response.body || '';
-    if (typeof maskedResponseBody === 'object') {
-      maskedResponseBody = JSON.stringify(maskedResponseBody);
+    // Process request body if present
+    let maskedRequestBody = '';
+    if (request.body) {
+      if (typeof request.body === 'string') {
+        maskedRequestBody = maskSensitiveBody(request.body);
+      } else if (typeof request.body === 'object') {
+        maskedRequestBody = maskSensitiveBody(JSON.stringify(request.body));
+      }
     }
     
-    // Truncate response body if it's too large
-    const truncatedResponseBody = String(maskedResponseBody).substring(0, 1000);
+    // Process response body
+    let maskedResponseBody = '';
+    if (response.body) {
+      if (typeof response.body === 'string') {
+        maskedResponseBody = response.body;
+      } else if (typeof response.body === 'object') {
+        maskedResponseBody = JSON.stringify(response.body);
+      }
+    }
+    
+    // Extract response headers if available
+    const responseHeaders = response.headers ? 
+      (typeof response.headers === 'object' ? response.headers : {}) : {};
+    
+    // Truncate response body if it's too large (increased limit for better debugging)
+    const truncatedResponseBody = String(maskedResponseBody).substring(0, 5000);
     
     const logEntry: ApiLogEntry = {
       request_method: request.method || 'GET',
       request_url: request.url,
       request_headers: maskedHeaders as Json,
-      response_status: response.status,
+      request_body: maskedRequestBody || undefined,
+      response_status: response.status || 0,
+      response_headers: responseHeaders as Json,
       response_body: truncatedResponseBody,
+      log_type: logType,
+      error: response.error ? String(response.error) : undefined
     };
     
     const { error } = await supabase
@@ -154,6 +277,8 @@ export const logApiRequest = async (request: any, response: any) => {
       
     if (error) {
       console.error("Error logging API request:", error);
+    } else {
+      console.log(`[${logType}] Successfully logged request to ${request.url}`);
     }
   } catch (error) {
     console.error("Error in logApiRequest:", error);
@@ -204,16 +329,19 @@ export const makeWordPressApiRequest = async (endpoint: string, options: Request
     try {
       const response = await fetch(url, requestOptions);
       const responseBody = await response.clone().text();
+      const responseHeaders = extractResponseHeaders(response);
       
       responseDetails = { 
         status: response.status, 
-        body: responseBody 
+        body: responseBody,
+        headers: responseHeaders
       };
       
       // Log the API request and response
       await logApiRequest(
         requestDetails,
-        responseDetails
+        responseDetails,
+        "WordPress API Request"
       );
       
       if (!response.ok) {
@@ -229,13 +357,88 @@ export const makeWordPressApiRequest = async (endpoint: string, options: Request
     } catch (fetchError) {
       // Log the error
       responseDetails.body = fetchError instanceof Error ? fetchError.message : "Network error";
-      await logApiRequest(requestDetails, responseDetails);
+      responseDetails.error = fetchError;
+      await logApiRequest(requestDetails, responseDetails, "WordPress API Error");
       throw fetchError;
     }
   } catch (error) {
     console.error("Error making WordPress API request:", error);
     toast.error("Failed to connect to WordPress API");
     return null;
+  }
+};
+
+// Helper function to directly fetch any URL for troubleshooting
+export const fetchExternalUrl = async (url: string, options: RequestInit = {}) => {
+  try {
+    console.log(`Fetching external URL: ${url}`);
+    
+    // Prepare request details for logging
+    const requestDetails = {
+      method: options.method || 'GET',
+      url,
+      headers: options.headers || {},
+      body: options.body ? 
+        (typeof options.body === 'string' ? 
+          maskSensitiveBody(options.body) : 
+          JSON.stringify(options.body)
+        ) : undefined
+    };
+    
+    // Make the request
+    const response = await fetch(url, options);
+    const responseText = await response.clone().text();
+    const responseHeaders = extractResponseHeaders(response);
+    
+    // Prepare response details for logging
+    const responseDetails = {
+      status: response.status,
+      body: responseText,
+      headers: responseHeaders
+    };
+    
+    // Log the external request
+    await logApiRequest(requestDetails, responseDetails, "External URL Request");
+    
+    return {
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText,
+      headers: responseHeaders,
+      text: responseText,
+      json: () => {
+        try {
+          return JSON.parse(responseText);
+        } catch (e) {
+          console.error("Error parsing response as JSON:", e);
+          return null;
+        }
+      }
+    };
+  } catch (error) {
+    console.error(`Error fetching external URL ${url}:`, error);
+    
+    // Log the error
+    const responseDetails = {
+      status: 0,
+      body: error instanceof Error ? error.message : "Network error",
+      error
+    };
+    
+    await logApiRequest(
+      { method: options.method || 'GET', url, headers: options.headers || {} },
+      responseDetails, 
+      "External URL Error"
+    );
+    
+    return {
+      ok: false,
+      status: 0,
+      statusText: error instanceof Error ? error.message : "Network error",
+      headers: {},
+      text: error instanceof Error ? error.message : "Network error",
+      json: () => null
+    };
   }
 };
 
@@ -417,5 +620,25 @@ export const fetchWordPressApiLogs = async (limit = 30) => {
   } catch (error) {
     console.error("Error in fetchWordPressApiLogs:", error);
     return [];
+  }
+};
+
+// Add admin functionality to view database values directly for troubleshooting
+export const fetchDatabaseTable = async (tableName: string, limit: number = 100) => {
+  try {
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('*')
+      .limit(limit);
+      
+    if (error) {
+      console.error(`Error fetching table ${tableName}:`, error);
+      return null;
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error(`Error in fetchDatabaseTable for ${tableName}:`, error);
+    return null;
   }
 };
