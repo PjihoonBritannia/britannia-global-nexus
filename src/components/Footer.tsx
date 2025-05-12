@@ -70,8 +70,13 @@ const Footer: React.FC<FooterProps> = ({
             <h3 className="text-base font-semibold text-white mb-4">Management</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/workspace/login" className="text-gray-300 hover:text-white transition-colors">
-                  Login
+                <Link to="/login" className="text-gray-300 hover:text-white transition-colors">
+                  Login with WordPress
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin" className="text-gray-300 hover:text-white transition-colors">
+                  Admin Login
                 </Link>
               </li>
             </ul>

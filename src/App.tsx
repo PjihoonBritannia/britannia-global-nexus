@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +15,9 @@ import UkProperty from "./pages/UkProperty";
 import Contents from "./pages/Contents";
 import ContentPost from "./pages/ContentPost";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/workspace/Login";
+import Login from "./pages/Login";
+import Admin from "./pages/Admin"; // New Admin page
+import OAuthCallback from "./pages/OAuthCallback"; // New OAuth callback page
 import Workspace from "./pages/workspace/Workspace";
 import WorkspaceAccounts from "./pages/workspace/Accounts";
 import WorkspaceContents from "./pages/workspace/Contents";
@@ -50,6 +51,7 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const { pathname } = useLocation();
   const isWorkspace = pathname.startsWith('/workspace');
+  const isAuthPage = pathname === '/login' || pathname === '/admin' || pathname.startsWith('/oauthwp');
 
   // Define Footer props
   const footerProps = {
@@ -89,7 +91,7 @@ const AppRoutes = () => {
   return (
     <>
       <ScrollToTop />
-      <Header />
+      {!isAuthPage && <Header />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Index />} />
@@ -100,7 +102,11 @@ const AppRoutes = () => {
         <Route path="/careers" element={<Careers />} />
         <Route path="/contents" element={<Contents />} />
         <Route path="/contents/:slug" element={<ContentPost />} />
-        <Route path="/workspace/login" element={<Login />} />
+        
+        {/* Authentication Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/oauthwp/callback" element={<OAuthCallback />} />
         
         {/* Protected Workspace Routes */}
         <Route element={<ProtectedRoute />}>
@@ -114,7 +120,7 @@ const AppRoutes = () => {
         
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isWorkspace && <Footer {...footerProps} />}
+      {!isWorkspace && !isAuthPage && <Footer {...footerProps} />}
     </>
   );
 };

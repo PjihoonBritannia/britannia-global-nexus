@@ -9,8 +9,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireAdmin = false }) => {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, wpUser } = useAuth();
   const location = useLocation();
+  
+  // Check if authenticated with either Supabase or WordPress
+  const isAuthenticated = !!user || !!wpUser;
 
   if (loading) {
     return (
@@ -20,11 +23,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireAdmin = false })
     );
   }
 
-  if (!user) {
-    return <Navigate to="/workspace/login" state={{ from: location }} replace />;
+  if (!isAuthenticated) {
+    // Redirect to login page if not authenticated
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (requireAdmin && !isAdmin) {
+    // Redirect to home if admin access is required but user is not admin
     return <Navigate to="/" replace />;
   }
 

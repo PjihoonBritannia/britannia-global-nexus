@@ -13,10 +13,18 @@ import {
   SidebarInset
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Users, FileText, Settings, LogOut, ArrowLeft } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  FileText, 
+  Settings, 
+  LogOut, 
+  ArrowLeft,
+  User
+} from 'lucide-react';
 
 const Workspace = () => {
-  const { signOut, user } = useAuth();
+  const { signOut, user, wpUser, authSource } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,6 +34,14 @@ const Workspace = () => {
 
   // Determine if we're on the settings page to apply wider layout
   const isSettingsPage = location.pathname.includes('/workspace/settings');
+  
+  // Get user display name
+  const displayName = wpUser ? wpUser.name : (user?.email || '');
+  
+  // Get user role/title for display
+  const userTitle = wpUser 
+    ? (wpUser.roles?.includes('administrator') ? 'WordPress Admin' : 'WordPress User')
+    : 'Admin User';
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -110,12 +126,17 @@ const Workspace = () => {
             </SidebarMenu>
             
             <div className="mt-auto px-2 pb-4 pt-2">
-              {user && (
-                <div className="mb-4 flex flex-col space-y-1 px-2">
-                  <div className="text-sm font-medium">{user.email}</div>
-                  <div className="text-xs text-gray-500">Admin User</div>
+              <div className="mb-4 flex flex-col space-y-1 px-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <User className="h-4 w-4" /> {displayName}
                 </div>
-              )}
+                <div className="text-xs text-gray-500">
+                  {userTitle}
+                  <span className="ml-1 text-xs text-gray-400">
+                    ({authSource === 'wordpress' ? 'WordPress' : 'Supabase'})
+                  </span>
+                </div>
+              </div>
               <Button 
                 variant="outline" 
                 className="w-full justify-start gap-2" 
