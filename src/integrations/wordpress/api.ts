@@ -31,6 +31,9 @@ interface ApiLogEntry {
   error?: string;
 }
 
+// Define the allowed table names based on the Supabase schema
+type AllowedTable = 'content_items' | 'profiles' | 'settings' | 'user_roles' | 'wordpress_api_logs' | 'wordpress_settings';
+
 // Helper function to get WordPress settings from Supabase
 export const getWordPressSettings = async (): Promise<WordPressSettings> => {
   try {
@@ -624,7 +627,7 @@ export const fetchWordPressApiLogs = async (limit = 30) => {
 };
 
 // Add admin functionality to view database values directly for troubleshooting
-export const fetchDatabaseTable = async (tableName: string, limit: number = 100) => {
+export const fetchDatabaseTable = async (tableName: AllowedTable, limit: number = 100) => {
   try {
     const { data, error } = await supabase
       .from(tableName)
