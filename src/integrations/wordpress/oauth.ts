@@ -112,7 +112,7 @@ export const initiateWordPressOAuth = async (): Promise<void> => {
         state: state,
         client_id: WP_OAUTH_CLIENT_ID,
         redirect_uri: WP_OAUTH_REDIRECT_URI,
-        scope: "openid profile email"
+        scope: "basic"
       }
     });
     
@@ -155,10 +155,10 @@ export const exchangeCodeForToken = async (code: string): Promise<WordPressToken
       body: params.toString(),
       message: {
         grant_type: "authorization_code",
-        code_prefix: code.substring(0, 5) + "...",
+        code_prefix: code
         redirect_uri: WP_OAUTH_REDIRECT_URI,
         client_id: WP_OAUTH_CLIENT_ID,
-        client_secret: "*******" + WP_OAUTH_CLIENT_SECRET.slice(-4)
+        client_secret: WP_OAUTH_CLIENT_SECRET
       }
     });
     
