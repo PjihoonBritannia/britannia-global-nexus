@@ -61,7 +61,7 @@ export const getOAuthConfig = () => {
     tokenEndpoint: WP_OAUTH_TOKEN_ENDPOINT,
     userInfoEndpoint: WP_OAUTH_USER_INFO_ENDPOINT,
     revokeEndpoint: WP_OAUTH_REVOKE_ENDPOINT,
-    scope: "openid profile email"
+    scope: "basic"
   };
 };
 
