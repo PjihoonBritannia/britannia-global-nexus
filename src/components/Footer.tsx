@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin } from 'lucide-react';
@@ -8,7 +9,7 @@ const Footer = () => {
 	return (
 		<footer className='bg-base-dark text-white pt-28 pb-10'>
 			<div className='container mx-auto px-6'>
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12'>
 					{/* Company Info */}
 					<div>
 						<div className='mb-5'>
@@ -110,6 +111,21 @@ const Footer = () => {
 									className='text-gray-300 hover:text-white text-sm font-light'
 								>
 									Terms of Use
+								</Link>
+							</li>
+						</ul>
+					</div>
+
+					{/* Management - New Section */}
+					<div>
+						<h3 className='text-lg font-medium mb-6'>Management</h3>
+						<ul className='space-y-4'>
+							<li>
+								<Link
+									to='/workspace/login'
+									className='text-gray-300 hover:text-white text-sm font-light'
+								>
+									Login
 								</Link>
 							</li>
 						</ul>

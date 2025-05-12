@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Media from "./pages/Media";
@@ -12,6 +14,12 @@ import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
 import UkProperty from "./pages/UkProperty";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/workspace/Login";
+import Workspace from "./pages/workspace/Workspace";
+import WorkspaceAccounts from "./pages/workspace/Accounts";
+import WorkspaceContents from "./pages/workspace/Contents";
+import WorkspaceSettings from "./pages/workspace/Settings";
+import WorkspaceHome from "./pages/workspace/Home";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -38,20 +46,36 @@ const ScrollToTop = () => {
 
 // Main App component with routes
 const AppRoutes = () => {
+  const { pathname } = useLocation();
+  const isWorkspace = pathname.startsWith('/workspace');
+
   return (
     <>
       <ScrollToTop />
-      <Header />
+      {!isWorkspace && <Header />}
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/uk-property" element={<UkProperty />} />
         <Route path="/media" element={<Media />} />
         <Route path="/esg" element={<Esg />} />
         <Route path="/careers" element={<Careers />} />
+        <Route path="/workspace/login" element={<Login />} />
+        
+        {/* Protected Workspace Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/workspace" element={<Workspace />}>
+            <Route index element={<WorkspaceHome />} />
+            <Route path="accounts" element={<WorkspaceAccounts />} />
+            <Route path="contents" element={<WorkspaceContents />} />
+            <Route path="settings" element={<WorkspaceSettings />} />
+          </Route>
+        </Route>
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
+      {!isWorkspace && <Footer />}
     </>
   );
 };
@@ -59,10 +83,12 @@ const AppRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
-        <AppRoutes />
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
