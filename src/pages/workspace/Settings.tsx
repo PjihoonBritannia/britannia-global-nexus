@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, Save, Globe } from 'lucide-react';
+import { Loader2, Save, Globe, Lock, Key, RefreshCw } from 'lucide-react';
 import { 
   Tabs, 
   TabsContent, 
@@ -26,6 +25,7 @@ import {
   updateWordPressSettings,
   fetchWordPressApiLogs
 } from '@/integrations/wordpress/api';
+import { getOAuthConfig } from '@/integrations/wordpress/oauth';
 import { Json } from '@/integrations/supabase/types';
 
 interface Setting {
@@ -90,6 +90,9 @@ const WorkspaceSettings = () => {
   const [wpSaving, setWpSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   
+  // Get WordPress OAuth config
+  const oauthConfig = getOAuthConfig();
+  
   useEffect(() => {
     fetchSettings();
     fetchWordPressConfig();
@@ -149,7 +152,7 @@ const WorkspaceSettings = () => {
     try {
       setLogsLoading(true);
       const logs = await fetchWordPressApiLogs();
-      setApiLogs(logs as ApiLog[]);
+      setApiLogs(logs);
     } catch (error) {
       console.error('Error fetching API logs:', error);
     } finally {
@@ -286,6 +289,12 @@ const WorkspaceSettings = () => {
     }
   };
   
+  const maskSecret = (secret: string) => {
+    if (!secret) return "Not set";
+    if (secret.length <= 4) return "*".repeat(secret.length);
+    return "*".repeat(secret.length - 4) + secret.slice(-4);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -296,7 +305,8 @@ const WorkspaceSettings = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="wordpress">WordPress</TabsTrigger>
+          <TabsTrigger value="wordpress">WordPress API</TabsTrigger>
+          <TabsTrigger value="oauth">OAuth Config</TabsTrigger>
           <TabsTrigger value="logs">API Logs</TabsTrigger>
         </TabsList>
         
@@ -456,13 +466,114 @@ const WorkspaceSettings = () => {
           )}
         </TabsContent>
         
-        <TabsContent value="logs" className="space-y-4">
+        <TabsContent value="oauth" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>WordPress REST API Logs</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Key className="h-5 w-5" /> WordPress OAuth Configuration
+              </CardTitle>
               <CardDescription>
-                Logs of API requests between this application and WordPress
+                Current configuration for WordPress OAuth authentication
               </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6 divide-y">
+                {/* Client ID */}
+                <div className="pt-4 first:pt-0">
+                  <Label className="text-gray-500 text-sm">Client ID</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="font-medium">{oauthConfig.clientId}</span>
+                  </div>
+                </div>
+                
+                {/* Client Secret */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">Client Secret</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
+                      {maskSecret(oauthConfig.clientSecret)}
+                    </code>
+                  </div>
+                  <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    For security, only the last 4 characters are shown
+                  </p>
+                </div>
+                
+                {/* Authorization Endpoint */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">Authorization Endpoint</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono overflow-auto max-w-full">
+                      {oauthConfig.authorizeEndpoint}
+                    </code>
+                  </div>
+                </div>
+                
+                {/* Token Endpoint */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">Token Endpoint</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono overflow-auto max-w-full">
+                      {oauthConfig.tokenEndpoint}
+                    </code>
+                  </div>
+                </div>
+                
+                {/* User Info Endpoint */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">User Info Endpoint</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono overflow-auto max-w-full">
+                      {oauthConfig.userInfoEndpoint}
+                    </code>
+                  </div>
+                </div>
+                
+                {/* Redirect URI */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">Redirect URI (Callback URL)</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono overflow-auto max-w-full">
+                      {oauthConfig.redirectUri}
+                    </code>
+                  </div>
+                </div>
+                
+                {/* Scope */}
+                <div className="pt-4">
+                  <Label className="text-gray-500 text-sm">Scope</Label>
+                  <div className="flex items-center justify-between mt-1">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
+                      {oauthConfig.scope}
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end text-sm text-gray-500">
+              <p>These settings are defined in the codebase and can be edited by a developer.</p>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="logs" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>WordPress REST API Logs</CardTitle>
+                <CardDescription>
+                  Logs of API requests between this application and WordPress
+                </CardDescription>
+              </div>
+              <Button 
+                onClick={fetchApiLogs}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="h-[500px] overflow-y-auto border rounded-md">
@@ -530,13 +641,9 @@ const WorkspaceSettings = () => {
                 )}
               </div>
             </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button 
-                onClick={fetchApiLogs}
-                variant="outline"
-              >
-                Refresh Logs
-              </Button>
+            <CardFooter className="flex justify-between items-center text-sm text-gray-500">
+              <div>Showing the {apiLogs.length} most recent API logs</div>
+              <div>Logs are automatically refreshed every 30 seconds</div>
             </CardFooter>
           </Card>
         </TabsContent>

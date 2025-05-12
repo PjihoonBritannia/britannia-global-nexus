@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Json } from "@/integrations/supabase/types";
@@ -60,15 +59,93 @@ export const getWordPressSettings = async (): Promise<WordPressSettings> => {
   }
 };
 
+// Helper function to mask sensitive information in headers
+const maskSensitiveHeaders = (headers: Record<string, string>) => {
+  const maskedHeaders = { ...headers };
+  
+  // Mask authorization header
+  if (maskedHeaders.authorization || maskedHeaders.Authorization) {
+    const authHeader = maskedHeaders.authorization || maskedHeaders.Authorization;
+    if (authHeader.toLowerCase().startsWith('bearer ')) {
+      maskedHeaders.authorization = 'Bearer <masked_token>';
+    } else if (authHeader.toLowerCase().startsWith('basic ')) {
+      maskedHeaders.authorization = 'Basic <masked_credentials>';
+    }
+  }
+  
+  return maskedHeaders;
+};
+
+// Helper function to mask sensitive information in request body
+const maskSensitiveBody = (body: string) => {
+  try {
+    // Try to parse as JSON first
+    const parsedBody = JSON.parse(body);
+    
+    // Check for common sensitive fields
+    if (parsedBody.password) parsedBody.password = '********';
+    if (parsedBody.client_secret) parsedBody.client_secret = '********';
+    if (parsedBody.app_password) parsedBody.app_password = '********';
+    
+    return JSON.stringify(parsedBody);
+  } catch (e) {
+    // If not JSON, try to mask URL encoded form data
+    if (body.includes('client_secret=')) {
+      body = body.replace(/client_secret=[^&]+/, 'client_secret=********');
+    }
+    if (body.includes('password=')) {
+      body = body.replace(/password=[^&]+/, 'password=********');
+    }
+    if (body.includes('app_password=')) {
+      body = body.replace(/app_password=[^&]+/, 'app_password=********');
+    }
+    
+    return body;
+  }
+};
+
 // Helper function to log API requests to Supabase
 export const logApiRequest = async (request: any, response: any) => {
   try {
+    // Keep only the most recent 30 logs
+    const { data: existingLogs, error: countError } = await supabase
+      .from('wordpress_api_logs')
+      .select('id')
+      .order('timestamp', { ascending: false })
+      .limit(50);
+    
+    if (!countError && existingLogs && existingLogs.length >= 30) {
+      // Calculate how many logs to remove
+      const logsToRemove = existingLogs.slice(29); // Keep indices 0-29 (first 30)
+      
+      if (logsToRemove.length > 0) {
+        const idsToRemove = logsToRemove.map(log => log.id);
+        
+        // Delete excess logs
+        await supabase
+          .from('wordpress_api_logs')
+          .delete()
+          .in('id', idsToRemove);
+      }
+    }
+    
+    // Mask sensitive data in headers and response
+    const maskedHeaders = request.headers ? maskSensitiveHeaders(request.headers) : {};
+    
+    let maskedResponseBody = response.body || '';
+    if (typeof maskedResponseBody === 'object') {
+      maskedResponseBody = JSON.stringify(maskedResponseBody);
+    }
+    
+    // Truncate response body if it's too large
+    const truncatedResponseBody = String(maskedResponseBody).substring(0, 1000);
+    
     const logEntry: ApiLogEntry = {
       request_method: request.method || 'GET',
       request_url: request.url,
-      request_headers: request.headers,
+      request_headers: maskedHeaders as Json,
       response_status: response.status,
-      response_body: typeof response.body === 'object' ? JSON.stringify(response.body) : String(response.body).substring(0, 1000),
+      response_body: truncatedResponseBody,
     };
     
     const { error } = await supabase
@@ -109,24 +186,52 @@ export const makeWordPressApiRequest = async (endpoint: string, options: Request
       },
     };
     
-    const response = await fetch(url, requestOptions);
+    // Log the request details (before making the request)
+    const requestDetails = { 
+      method: requestOptions.method || 'GET', 
+      url, 
+      headers: requestOptions.headers,
+      body: requestOptions.body ? 
+        (typeof requestOptions.body === 'string' ? 
+          maskSensitiveBody(requestOptions.body) : 
+          JSON.stringify(requestOptions.body)
+        ) : undefined
+    };
     
-    // Log the API request and response
-    await logApiRequest(
-      { method: requestOptions.method || 'GET', url, headers: requestOptions.headers },
-      { status: response.status, body: await response.clone().text() }
-    );
+    const startTime = Date.now();
+    let responseDetails: any = { status: 0, body: "No response" };
     
-    if (!response.ok) {
-      // If response is not ok, handle the error based on status code
-      if (response.status === 401) {
-        toast.error("Authentication failed. Please check your WordPress credentials.");
-        return null;
+    try {
+      const response = await fetch(url, requestOptions);
+      const responseBody = await response.clone().text();
+      
+      responseDetails = { 
+        status: response.status, 
+        body: responseBody 
+      };
+      
+      // Log the API request and response
+      await logApiRequest(
+        requestDetails,
+        responseDetails
+      );
+      
+      if (!response.ok) {
+        // If response is not ok, handle the error based on status code
+        if (response.status === 401) {
+          toast.error("Authentication failed. Please check your WordPress credentials.");
+          return null;
+        }
+        throw new Error(`HTTP error ${response.status}: ${responseBody}`);
       }
-      throw new Error(`HTTP error ${response.status}`);
+      
+      return response;
+    } catch (fetchError) {
+      // Log the error
+      responseDetails.body = fetchError instanceof Error ? fetchError.message : "Network error";
+      await logApiRequest(requestDetails, responseDetails);
+      throw fetchError;
     }
-    
-    return response;
   } catch (error) {
     console.error("Error making WordPress API request:", error);
     toast.error("Failed to connect to WordPress API");
@@ -295,7 +400,7 @@ export const updateWordPressSettings = async (settings: WordPressSettings) => {
 /**
  * Fetch API logs from Supabase
  */
-export const fetchWordPressApiLogs = async (limit = 20) => {
+export const fetchWordPressApiLogs = async (limit = 30) => {
   try {
     const { data, error } = await supabase
       .from('wordpress_api_logs')
