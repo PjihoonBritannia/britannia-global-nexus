@@ -117,6 +117,66 @@ export type Database = {
         }
         Relationships: []
       }
+      wordpress_api_logs: {
+        Row: {
+          id: string
+          request_headers: Json | null
+          request_method: string
+          request_url: string
+          response_body: string | null
+          response_status: number
+          timestamp: string | null
+        }
+        Insert: {
+          id?: string
+          request_headers?: Json | null
+          request_method: string
+          request_url: string
+          response_body?: string | null
+          response_status: number
+          timestamp?: string | null
+        }
+        Update: {
+          id?: string
+          request_headers?: Json | null
+          request_method?: string
+          request_url?: string
+          response_body?: string | null
+          response_status?: number
+          timestamp?: string | null
+        }
+        Relationships: []
+      }
+      wordpress_settings: {
+        Row: {
+          admin_url: string
+          api_url: string
+          app_password: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          admin_url: string
+          api_url: string
+          app_password: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          admin_url?: string
+          api_url?: string
+          app_password?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

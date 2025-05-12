@@ -7,8 +7,28 @@ const DEFAULT_WP_API_URL = "https://britannia.co.kr/wp-json/wp/v2";
 const DEFAULT_WP_ADMIN_URL = "https://britannia.co.kr/wp-admin";
 const DEFAULT_WP_USERNAME = "gbadmin";
 
+// Type definitions for WordPress API structures
+interface WordPressSettings {
+  id?: string;
+  api_url: string;
+  admin_url: string;
+  username: string;
+  app_password: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface ApiLogEntry {
+  request_method: string;
+  request_url: string;
+  request_headers?: Record<string, any>;
+  response_status: number;
+  response_body?: string;
+  timestamp?: string;
+}
+
 // Helper function to get WordPress settings from Supabase
-export const getWordPressSettings = async () => {
+export const getWordPressSettings = async (): Promise<WordPressSettings> => {
   try {
     const { data, error } = await supabase
       .from('wordpress_settings')
@@ -26,12 +46,7 @@ export const getWordPressSettings = async () => {
       };
     }
     
-    return data || {
-      api_url: DEFAULT_WP_API_URL,
-      admin_url: DEFAULT_WP_ADMIN_URL,
-      username: DEFAULT_WP_USERNAME,
-      app_password: "XXR3 nGgK olNF QmsQ V9oq 00dg" // Default password
-    };
+    return data as WordPressSettings;
   } catch (error) {
     console.error("Error in getWordPressSettings:", error);
     // Fall back to default values
@@ -47,16 +62,17 @@ export const getWordPressSettings = async () => {
 // Helper function to log API requests to Supabase
 export const logApiRequest = async (request: any, response: any) => {
   try {
+    const logEntry: ApiLogEntry = {
+      request_method: request.method || 'GET',
+      request_url: request.url,
+      request_headers: request.headers,
+      response_status: response.status,
+      response_body: typeof response.body === 'object' ? JSON.stringify(response.body) : String(response.body).substring(0, 1000),
+    };
+    
     const { error } = await supabase
       .from('wordpress_api_logs')
-      .insert({
-        request_method: request.method,
-        request_url: request.url,
-        request_headers: request.headers,
-        response_status: response.status,
-        response_body: typeof response.body === 'object' ? JSON.stringify(response.body) : String(response.body).substring(0, 1000),
-        timestamp: new Date().toISOString()
-      });
+      .insert(logEntry);
       
     if (error) {
       console.error("Error logging API request:", error);
@@ -74,7 +90,7 @@ const handleApiError = (error: any, message: string) => {
 };
 
 // Helper function to make authenticated WordPress API requests
-export const makeWordPressApiRequest = async (endpoint: string, options = {}) => {
+export const makeWordPressApiRequest = async (endpoint: string, options: RequestInit = {}) => {
   try {
     const settings = await getWordPressSettings();
     const { api_url, username, app_password } = settings;
@@ -84,10 +100,10 @@ export const makeWordPressApiRequest = async (endpoint: string, options = {}) =>
     
     const url = endpoint.startsWith('http') ? endpoint : `${api_url}${endpoint}`;
     
-    const requestOptions = {
+    const requestOptions: RequestInit = {
       ...options,
       headers: {
-        ...options?.['headers'],
+        ...options?.headers,
         Authorization: `Basic ${appPasswordEncoded}`,
       },
     };
@@ -252,7 +268,7 @@ export const fetchWordPressCategories = async () => {
 /**
  * Update WordPress settings in Supabase
  */
-export const updateWordPressSettings = async (settings: any) => {
+export const updateWordPressSettings = async (settings: WordPressSettings) => {
   try {
     const { data, error } = await supabase
       .from('wordpress_settings')
@@ -297,3 +313,4 @@ export const fetchWordPressApiLogs = async (limit = 20) => {
     return [];
   }
 };
+

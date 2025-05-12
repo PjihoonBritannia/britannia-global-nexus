@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fetchWordPressPosts, fetchWordPressCategories } from '@/integrations/wordpress/api';
 import SectionTitle from '@/components/SectionTitle';
 import { Button } from '@/components/ui/button';

@@ -1,297 +1,177 @@
 
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const Header = () => {
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const [isScrolled, setIsScrolled] = useState(false);
-	const location = useLocation();
-	const navigate = useNavigate();
-	const { user } = useAuth();
+type HeaderItem = {
+  label: string;
+  to: string;
+  subItems?: HeaderItem[];
+};
 
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
+type HeaderProps = {
+  bgTransparent?: boolean;
+};
 
-	// Handle scroll effect
-	useEffect(() => {
-		const handleScroll = () => {
-			if (window.scrollY > 20) {
-				setIsScrolled(true);
-			} else {
-				setIsScrolled(false);
-			}
-		};
+const Header: React.FC<HeaderProps> = ({ bgTransparent = false }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const { user } = useAuth();
 
-		window.addEventListener('scroll', handleScroll);
-		// Initialize scroll state
-		handleScroll();
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-		};
-	}, []);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
 
-	// Close menu when route changes
-	useEffect(() => {
-		setIsMenuOpen(false);
-	}, [location]);
-	
-	// Handle workspace button click
-	const handleWorkspaceClick = () => {
-		navigate('/workspace');
-	};
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
-	return (
-		<header
-			className={`fixed w-full z-50 transition-all duration-300 ${
-				isScrolled || (isMenuOpen && !isScrolled)
-					? 'bg-white/90 backdrop-blur-md shadow-md py-4'
-					: 'bg-transparent py-6'
-			}`}
-		>
-			<div className='container mx-auto px-6 flex items-center justify-between'>
-				<Link
-					to='/'
-					className={`flex items-center transition-transform duration-300 ${
-						isScrolled ? 'scale-90' : ''
-					}`}
-				>
-					<img
-						src={
-							isScrolled || (isMenuOpen && !isScrolled)
-								? 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_black.svg'
-								: 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_white.svg'
-						}
-						alt='Britannia Inc.'
-						className='h-10 w-auto transition-opacity duration-300'
-					/>
-					<span className='sr-only'>Britannia Inc.</span>
-				</Link>
+  const navigationItems: HeaderItem[] = [
+    { label: 'About Us', to: '/about' },
+    { label: 'UK Property', to: '/uk-property' },
+    { label: 'Media', to: '/media' },
+    { label: 'ESG', to: '/esg' },
+    { label: 'Careers', to: '/careers' },
+    { label: 'Contents', to: '/contents' },
+  ];
 
-				{/* Desktop Navigation */}
-				<nav className='hidden md:flex items-center space-x-12'>
-					{/* Home link - only shown when scrolled */}
-					{isScrolled && (
-						<Link
-							to='/'
-							className={`font-light link-underline transition-colors duration-200 ${
-								location.pathname === '/'
-									? 'text-point'
-									: 'text-base-dark'
-							}`}
-						>
-							Home
-						</Link>
-					)}
+  // Check if current path is in workspace section
+  const isWorkspace = location.pathname.startsWith('/workspace');
 
-					<Link
-						to='/about'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/about'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						About
-					</Link>
-					<Link
-						to='/uk-property'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/uk-property'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						Property
-					</Link>
-					<Link
-						to='/media'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/media'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						Media
-					</Link>
-					<Link
-						to='/esg'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/esg'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						ESG
-					</Link>
-					<Link
-						to='/careers'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/careers'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						Careers
-					</Link>
-					<Link
-						to='/contents'
-						className={`font-light link-underline transition-colors duration-200 ${
-							isScrolled || (isMenuOpen && !isScrolled)
-								? location.pathname === '/contents'
-									? 'text-point'
-									: 'text-base-dark'
-								: 'text-white hover:text-white/80'
-						}`}
-					>
-						Contents
-					</Link>
-					{user ? (
-						<Button 
-							className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'
-							onClick={handleWorkspaceClick}
-						>
-							Workspace
-						</Button>
-					) : (
-						<Button className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'>
-							Contact Us
-						</Button>
-					)}
-				</nav>
+  // Skip rendering the header on the workspace pages
+  if (isWorkspace) {
+    return null;
+  }
 
-				{/* Mobile Menu Button */}
-				<button
-					className={`md:hidden p-2 ${
-						isScrolled || (isMenuOpen && !isScrolled)
-							? 'text-base-dark'
-							: 'text-white'
-					}`}
-					onClick={toggleMenu}
-					aria-label='Toggle menu'
-				>
-					{isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-				</button>
-			</div>
+  return (
+    <header
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled || !bgTransparent ? 'bg-white shadow-lg' : 'bg-transparent'
+      }`}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo */}
+          <Link to="/" className="shrink-0">
+            <img
+              src={
+                scrolled || !bgTransparent
+                  ? 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_black.svg'
+                  : 'https://cdn.jsdelivr.net/gh/PjihoonBritannia/britannia-global-nexus@main/public/statics/logo_white.svg'
+              }
+              alt="Britannia Inc."
+              className="h-10 w-auto transition-all duration-300"
+            />
+          </Link>
 
-			{/* Mobile Navigation */}
-			{isMenuOpen && (
-				<div className='md:hidden absolute w-full bg-white/95 backdrop-blur-md z-50 border-t border-gray-100'>
-					<nav className='container mx-auto px-6 py-5 flex flex-col space-y-6'>
-						<Link
-							to='/'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							Home
-						</Link>
-						<Link
-							to='/about'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/about'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							About
-						</Link>
-						<Link
-							to='/uk-property'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/uk-property'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							UK Property
-						</Link>
-						<Link
-							to='/media'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/media'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							Media
-						</Link>
-						<Link
-							to='/esg'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/esg'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							ESG
-						</Link>
-						<Link
-							to='/careers'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/careers'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							Careers
-						</Link>
-						<Link
-							to='/contents'
-							className={`font-light hover:text-point p-2 transition-all duration-200 ${
-								location.pathname === '/contents'
-									? 'text-point translate-x-2'
-									: 'text-base-dark'
-							}`}
-							onClick={() => setIsMenuOpen(false)}
-						>
-							Contents
-						</Link>
-						{user ? (
-							<Button
-								className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
-								onClick={() => {
-									setIsMenuOpen(false);
-									navigate('/workspace');
-								}}
-							>
-								Workspace
-							</Button>
-						) : (
-							<Button
-								className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
-								onClick={() => setIsMenuOpen(false)}
-							>
-								Contact Us
-							</Button>
-						)}
-					</nav>
-				</div>
-			)}
-		</header>
-	);
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={`text-sm font-medium transition-colors duration-300 ${
+                  scrolled || !bgTransparent
+                    ? 'text-gray-900 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
+                } ${location.pathname === item.to ? 'font-bold' : ''}`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* CTA Button */}
+          <div className="hidden md:block">
+            {user ? (
+              <Button
+                asChild
+                className="bg-point hover:bg-point/80 text-white rounded-[15px]"
+              >
+                <Link to="/workspace">Workspace</Link>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                className="bg-point hover:bg-point/80 text-white rounded-[15px]"
+              >
+                <Link to="#contact">Contact Us</Link>
+              </Button>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-900 dark:text-white"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? (
+              <X className={`h-6 w-6 ${scrolled || !bgTransparent ? 'text-gray-900' : 'text-white'}`} />
+            ) : (
+              <Menu className={`h-6 w-6 ${scrolled || !bgTransparent ? 'text-gray-900' : 'text-white'}`} />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      {menuOpen && (
+        <nav className="md:hidden bg-white py-6 px-4 shadow-lg">
+          <div className="space-y-4">
+            {navigationItems.map((item) => (
+              <div key={item.label}>
+                <Link
+                  to={item.to}
+                  className={`block text-gray-900 hover:text-point text-sm font-medium ${
+                    location.pathname === item.to ? 'font-bold text-point' : ''
+                  }`}
+                  onClick={toggleMenu}
+                >
+                  {item.label}
+                </Link>
+              </div>
+            ))}
+            <div className="pt-4">
+              {user ? (
+                <Button
+                  asChild
+                  className="w-full bg-point hover:bg-point/80 text-white rounded-[15px]"
+                  onClick={toggleMenu}
+                >
+                  <Link to="/workspace">Workspace</Link>
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="w-full bg-point hover:bg-point/80 text-white rounded-[15px]"
+                  onClick={toggleMenu}
+                >
+                  <Link to="#contact">Contact Us</Link>
+                </Button>
+              )}
+            </div>
+          </div>
+        </nav>
+      )}
+    </header>
+  );
 };
 
 export default Header;
+

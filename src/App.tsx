@@ -14,7 +14,7 @@ import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
 import UkProperty from "./pages/UkProperty";
 import Contents from "./pages/Contents";
-import ContentPost from "./pages/ContentPost"; // Import the new ContentPost component
+import ContentPost from "./pages/ContentPost";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/workspace/Login";
 import Workspace from "./pages/workspace/Workspace";
@@ -89,7 +89,7 @@ const AppRoutes = () => {
   return (
     <>
       <ScrollToTop />
-      {!isWorkspace && <Header />}
+      <Header />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Index />} />
@@ -99,7 +99,7 @@ const AppRoutes = () => {
         <Route path="/esg" element={<Esg />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/contents" element={<Contents />} />
-        <Route path="/contents/:slug" element={<ContentPost />} /> {/* Add route for individual posts */}
+        <Route path="/contents/:slug" element={<ContentPost />} />
         <Route path="/workspace/login" element={<Login />} />
         
         {/* Protected Workspace Routes */}
