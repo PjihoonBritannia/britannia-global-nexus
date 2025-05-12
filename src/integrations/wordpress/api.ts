@@ -28,13 +28,21 @@ export const fetchWordPressUsers = async () => {
     });
     
     if (!response.ok) {
+      // If response is not ok, handle the error based on status code
+      if (response.status === 401) {
+        toast.error("Authentication failed. Please check your WordPress credentials.");
+        return [];
+      }
       throw new Error(`HTTP error ${response.status}`);
     }
     
     const users = await response.json();
-    return users;
+    return Array.isArray(users) ? users : [];
   } catch (error) {
-    return handleApiError(error, "Failed to fetch users from WordPress");
+    console.error("Error fetching WordPress users:", error);
+    toast.error("Failed to fetch users from WordPress");
+    // Return empty array instead of null to avoid undefined errors
+    return [];
   }
 };
 
@@ -53,20 +61,28 @@ export const fetchWordPressPosts = async (page = 1, perPage = 10) => {
     );
     
     if (!response.ok) {
+      // If response is not ok, handle the error based on status code
+      if (response.status === 401) {
+        toast.error("Authentication failed. Please check your WordPress credentials.");
+        return { posts: [], totalPages: 0, totalPosts: 0 };
+      }
       throw new Error(`HTTP error ${response.status}`);
     }
     
     const posts = await response.json();
-    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1');
-    const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0');
+    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1', 10);
+    const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0', 10);
     
     return {
-      posts,
+      posts: Array.isArray(posts) ? posts : [],
       totalPages,
       totalPosts
     };
   } catch (error) {
-    return handleApiError(error, "Failed to fetch posts from WordPress");
+    console.error("Error fetching WordPress posts:", error);
+    toast.error("Failed to fetch posts from WordPress");
+    // Return empty objects instead of null to avoid undefined errors
+    return { posts: [], totalPages: 0, totalPosts: 0 };
   }
 };
 
@@ -93,11 +109,17 @@ export const fetchWordPressPost = async (postId: number) => {
     });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        toast.error("Authentication failed. Please check your WordPress credentials.");
+        return null;
+      }
       throw new Error(`HTTP error ${response.status}`);
     }
     
     return await response.json();
   } catch (error) {
-    return handleApiError(error, `Failed to fetch post #${postId}`);
+    console.error(`Error fetching WordPress post #${postId}:`, error);
+    toast.error(`Failed to fetch post #${postId}`);
+    return null;
   }
 };

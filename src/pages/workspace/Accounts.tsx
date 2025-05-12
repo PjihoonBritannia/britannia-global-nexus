@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Loader2, ExternalLink } from 'lucide-react';
+import { Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { fetchWordPressUsers, getWordPressUserEditUrl } from '@/integrations/wordpress/api';
 
 interface WordPressUser {
@@ -30,6 +30,7 @@ interface WordPressUser {
 const WorkspaceAccounts = () => {
   const [users, setUsers] = useState<WordPressUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     fetchUsers();
@@ -38,16 +39,21 @@ const WorkspaceAccounts = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const wordpressUsers = await fetchWordPressUsers();
       
-      if (wordpressUsers) {
+      if (Array.isArray(wordpressUsers) && wordpressUsers.length > 0) {
         setUsers(wordpressUsers);
       } else {
+        // If we got an empty array or something unexpected
         setUsers([]);
+        setError("No users found or access denied. Please check your WordPress API permissions.");
       }
-    } catch (error) {
-      console.error('Error in fetchUsers:', error);
-      toast.error('An error occurred while loading WordPress users');
+    } catch (err) {
+      console.error('Error in fetchUsers:', err);
+      setError("An error occurred while loading WordPress users");
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -86,6 +92,19 @@ const WorkspaceAccounts = () => {
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-point" />
           </div>
+        ) : error ? (
+          <div className="flex flex-col justify-center items-center h-64 text-center px-4">
+            <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
+            <h3 className="text-lg font-medium mb-2">WordPress API Error</h3>
+            <p className="text-gray-500 max-w-md">{error}</p>
+            <Button 
+              onClick={fetchUsers} 
+              variant="outline" 
+              className="mt-4"
+            >
+              Try Again
+            </Button>
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -121,7 +140,7 @@ const WorkspaceAccounts = () => {
                     <TableCell>{user.email || 'Hidden'}</TableCell>
                     <TableCell>
                       <div className="flex gap-1 flex-wrap">
-                        {user.roles?.map((role, index) => (
+                        {user.roles && user.roles.length > 0 ? user.roles.map((role, index) => (
                           <span 
                             key={index}
                             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium
@@ -131,8 +150,7 @@ const WorkspaceAccounts = () => {
                           >
                             {role}
                           </span>
-                        ))}
-                        {(!user.roles || user.roles.length === 0) && (
+                        )) : (
                           <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700">
                             No role
                           </span>
