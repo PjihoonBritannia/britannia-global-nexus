@@ -135,6 +135,7 @@ export const exchangeCodeForToken = async (code: string): Promise<WordPressToken
   try {
     console.log("Exchanging code for token with code:", code.substring(0, 5) + "...");
     
+    // Create the form data for the token request
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
@@ -145,33 +146,92 @@ export const exchangeCodeForToken = async (code: string): Promise<WordPressToken
     console.log("Token request params:", params.toString());
     console.log("Token endpoint:", WP_OAUTH_TOKEN_ENDPOINT);
     
+    // Enhanced pre-request logging for diagnostics
+    const requestHeaders = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    
+    // Log all token request details before sending
+    console.log("TOKEN REQUEST DETAILS:");
+    console.log("- URL:", WP_OAUTH_TOKEN_ENDPOINT);
+    console.log("- Method: POST");
+    console.log("- Headers:", JSON.stringify(requestHeaders));
+    console.log("- Body Parameters:");
+    console.log("  - grant_type:", "authorization_code");
+    console.log("  - code:", code.substring(0, 4) + "..." + code.substring(code.length - 4));
+    console.log("  - redirect_uri:", WP_OAUTH_REDIRECT_URI);
+    console.log("  - client_id:", WP_OAUTH_CLIENT_ID);
+    console.log("  - client_secret:", WP_OAUTH_CLIENT_SECRET.substring(0, 4) + "..." + WP_OAUTH_CLIENT_SECRET.substring(WP_OAUTH_CLIENT_SECRET.length - 4));
+    
     // Detailed logging of token request parameters
     await logOAuthFlow("Token Request - Before", {
       method: "POST",
       url: WP_OAUTH_TOKEN_ENDPOINT,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: requestHeaders,
       body: params.toString(),
       message: {
         grant_type: "authorization_code",
-        code_prefix: code,
+        code_prefix: code.substring(0, 4) + "...",
         redirect_uri: WP_OAUTH_REDIRECT_URI,
         client_id: WP_OAUTH_CLIENT_ID,
-        client_secret: WP_OAUTH_CLIENT_SECRET
+        client_secret_masked: WP_OAUTH_CLIENT_SECRET.substring(0, 4) + "..." + WP_OAUTH_CLIENT_SECRET.substring(WP_OAUTH_CLIENT_SECRET.length - 4)
       }
     });
     
-    const response = await fetch(WP_OAUTH_TOKEN_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
-    });
+    // Using fetchWithTimeout to catch timeouts explicitly
+    const fetchToken = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
+      try {
+        const response = await fetch(WP_OAUTH_TOKEN_ENDPOINT, {
+          method: "POST",
+          headers: requestHeaders,
+          body: params.toString(),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('Request timed out after 30 seconds');
+        }
+        throw error;
+      }
+    };
     
-    console.log("Token response status:", response.status);
+    // Try making the request with more detailed error reporting
+    let response;
+    try {
+      console.log("Sending token request now...");
+      response = await fetchToken();
+      console.log("Token response received, status:", response.status);
+    } catch (fetchError) {
+      console.error("Fetch error during token request:", fetchError);
+      
+      // Try to get network error details
+      const errorDetails = {
+        name: fetchError.name || 'Unknown',
+        message: fetchError.message || 'No message',
+        stack: fetchError.stack || 'No stack trace',
+        code: fetchError.code || 'No error code'
+      };
+      
+      // Log the detailed fetch error
+      await logOAuthFlow("Token Request - Network Error", {
+        method: "POST",
+        url: WP_OAUTH_TOKEN_ENDPOINT,
+        status: 0,
+        responseBody: JSON.stringify(errorDetails),
+        message: errorDetails
+      });
+      
+      throw new Error(`Network error during token request: ${errorDetails.message}`);
+    }
     
+    // Read and parse the response
     let responseText = '';
     let responseData = null;
     

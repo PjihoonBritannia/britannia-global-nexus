@@ -4,12 +4,15 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LogIn } from 'lucide-react';
+import { initiateWordPressOAuth } from '@/integrations/wordpress/oauth';
+import { Separator } from '@/components/ui/separator';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [wpLoading, setWpLoading] = useState(false);
   const { signIn, user } = useAuth();
 
   // Redirect if already authenticated
@@ -27,6 +30,19 @@ const Login = () => {
       console.error('Login error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleWordPressLogin = async () => {
+    try {
+      setWpLoading(true);
+      console.log("Starting WordPress OAuth flow");
+      await initiateWordPressOAuth();
+    } catch (error) {
+      console.error('WordPress login error:', error);
+    } finally {
+      // Note: This may not execute if redirect happens successfully
+      setWpLoading(false);
     }
   };
 
@@ -48,7 +64,34 @@ const Login = () => {
             </p>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* WordPress OAuth Login Button */}
+          <div className="mb-6">
+            <Button
+              onClick={handleWordPressLogin}
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={wpLoading}
+            >
+              {wpLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  Connecting...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <LogIn className="h-4 w-4" /> Sign in with WordPress
+                </span>
+              )}
+            </Button>
+          </div>
+          
+          <div className="relative">
+            <Separator className="my-4" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="bg-white px-2 text-sm text-gray-500">OR</span>
+            </div>
+          </div>
+          
+          {/* Supabase Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -92,7 +135,7 @@ const Login = () => {
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  Sign In <ArrowRight className="h-4 w-4" />
+                  Sign In with Email <ArrowRight className="h-4 w-4" />
                 </span>
               )}
             </Button>

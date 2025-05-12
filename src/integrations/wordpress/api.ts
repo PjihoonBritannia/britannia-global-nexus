@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Json } from "@/integrations/supabase/types";
@@ -27,8 +28,8 @@ interface ApiLogEntry {
   response_headers?: Json;
   response_body?: string;
   timestamp?: string;
-  log_type?: string;
   error?: string;
+  // Note: log_type is not in the schema currently
 }
 
 // Define the allowed table names based on the Supabase schema
@@ -262,6 +263,8 @@ export const logApiRequest = async (
     // Truncate response body if it's too large (increased limit for better debugging)
     const truncatedResponseBody = String(maskedResponseBody).substring(0, 5000);
     
+    // Create the log entry with the modified structure
+    // Note: We're removing the log_type field as it's not in the database schema
     const logEntry: ApiLogEntry = {
       request_method: request.method || 'GET',
       request_url: request.url,
@@ -270,16 +273,18 @@ export const logApiRequest = async (
       response_status: response.status || 0,
       response_headers: responseHeaders as Json,
       response_body: truncatedResponseBody,
-      log_type: logType,
       error: response.error ? String(response.error) : undefined
     };
     
+    // Store the log information - fixed to match schema
     const { error } = await supabase
       .from('wordpress_api_logs')
       .insert(logEntry);
       
     if (error) {
       console.error("Error logging API request:", error);
+      // Log details of the error to help debug database issues
+      console.error("Log entry that failed:", JSON.stringify(logEntry));
     } else {
       console.log(`[${logType}] Successfully logged request to ${request.url}`);
     }
@@ -374,7 +379,7 @@ export const makeWordPressApiRequest = async (endpoint: string, options: Request
 // Helper function to directly fetch any URL for troubleshooting
 export const fetchExternalUrl = async (url: string, options: RequestInit = {}) => {
   try {
-    console.log(`Fetching external URL: ${url}`);
+    console.log(`Fetching external URL: ${url} with method: ${options.method || 'GET'}`);
     
     // Prepare request details for logging
     const requestDetails = {
@@ -388,10 +393,40 @@ export const fetchExternalUrl = async (url: string, options: RequestInit = {}) =
         ) : undefined
     };
     
+    // Debug options
+    console.log("Request options:", {
+      method: options.method || 'GET',
+      headers: options.headers || {},
+      body: options.body ? 'Present' : 'None',
+      mode: options.mode || 'default',
+      cache: options.cache || 'default',
+      credentials: options.credentials || 'default',
+      redirect: options.redirect || 'default',
+      referrer: options.referrer || 'default',
+      referrerPolicy: options.referrerPolicy || 'default',
+      signal: options.signal ? 'Present' : 'None'
+    });
+    
+    // Make the request with a timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    const fetchOptions = {
+      ...options,
+      signal: controller.signal
+    };
+    
     // Make the request
-    const response = await fetch(url, options);
+    const response = await fetch(url, fetchOptions);
+    clearTimeout(timeoutId);
+    
     const responseText = await response.clone().text();
     const responseHeaders = extractResponseHeaders(response);
+    
+    // Debug response details
+    console.log("Response status:", response.status);
+    console.log("Response headers:", responseHeaders);
+    console.log("Response text:", responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''));
     
     // Prepare response details for logging
     const responseDetails = {
@@ -421,11 +456,21 @@ export const fetchExternalUrl = async (url: string, options: RequestInit = {}) =
   } catch (error) {
     console.error(`Error fetching external URL ${url}:`, error);
     
+    // Log the error with more details
+    const errorDetails = {
+      name: error.name || 'Unknown',
+      message: error.message || 'Unknown error',
+      stack: error.stack || 'No stack trace',
+      code: error.code || 'No error code'
+    };
+    
+    console.error("Detailed error:", errorDetails);
+    
     // Log the error
     const responseDetails = {
       status: 0,
       body: error instanceof Error ? error.message : "Network error",
-      error
+      error: errorDetails
     };
     
     await logApiRequest(
