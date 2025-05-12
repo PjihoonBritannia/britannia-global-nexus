@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { fetchWordPressPosts } from '@/integrations/wordpress/api';
+import { Link, useNavigate } from 'react-router-dom';
+import { fetchWordPressPosts, fetchWordPressCategories } from '@/integrations/wordpress/api';
 import SectionTitle from '@/components/SectionTitle';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
@@ -17,6 +18,7 @@ interface WordPressPost {
     rendered: string;
   };
   date: string;
+  slug: string;
   link: string;
   _embedded?: {
     'wp:featuredmedia'?: [{
@@ -27,6 +29,13 @@ interface WordPressPost {
       name: string;
     }];
   };
+}
+
+interface WordPressCategory {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
 }
 
 const stripHtmlTags = (html: string): string => {
@@ -45,11 +54,29 @@ const formatDate = (dateString: string): string => {
 
 const Contents = () => {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
+  const [categories, setCategories] = useState<WordPressCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const navigate = useNavigate();
   const postsPerPage = 6;  // Show 6 posts per page
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesData = await fetchWordPressCategories();
+        if (categoriesData) {
+          setCategories(categoriesData);
+        }
+      } catch (err) {
+        console.error('Error fetching WordPress categories:', err);
+      }
+    };
+    
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -57,7 +84,7 @@ const Contents = () => {
       setError(null);
       
       try {
-        const result = await fetchWordPressPosts(currentPage, postsPerPage);
+        const result = await fetchWordPressPosts(currentPage, postsPerPage, selectedCategory || undefined);
         
         if (result && result.posts) {
           setPosts(result.posts);
@@ -76,7 +103,7 @@ const Contents = () => {
     };
     
     loadPosts();
-  }, [currentPage]);
+  }, [currentPage, selectedCategory]);
   
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -92,13 +119,45 @@ const Contents = () => {
     }
   };
   
+  const handleCategorySelect = (categoryId: number | null) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+  
+  const handlePostClick = (slug: string) => {
+    navigate(`/contents/${slug}`);
+  };
+  
   return (
     <div className="container mx-auto px-4 py-16 max-w-7xl">
       <SectionTitle
         title="Latest Content"
         subtitle="News, Articles, and Insights from Britannia Global Nexus"
-        className="mb-12"
+        className="mb-8"
       />
+      
+      {/* Category Filters */}
+      <div className="mb-8">
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Button
+            variant={selectedCategory === null ? "default" : "outline"}
+            onClick={() => handleCategorySelect(null)}
+            className={selectedCategory === null ? "bg-point hover:bg-point/90 text-white" : ""}
+          >
+            All Categories
+          </Button>
+          {categories.map(category => (
+            <Button
+              key={category.id}
+              variant={selectedCategory === category.id ? "default" : "outline"}
+              onClick={() => handleCategorySelect(category.id)}
+              className={selectedCategory === category.id ? "bg-point hover:bg-point/90 text-white" : ""}
+            >
+              {category.name} ({category.count})
+            </Button>
+          ))}
+        </div>
+      </div>
       
       {loading ? (
         <div className="flex justify-center items-center min-h-[400px]">
@@ -110,19 +169,23 @@ const Contents = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="space-y-6">
             {posts.map(post => (
-              <div key={post.id} className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden h-full">
-                {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                  <div className="h-48 overflow-hidden">
+              <div 
+                key={post.id}
+                className="flex flex-col md:flex-row bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                onClick={() => handlePostClick(post.slug)}
+              >
+                <div className="md:w-1/3 h-48 md:h-auto overflow-hidden">
+                  {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                     <img 
                       src={post._embedded['wp:featuredmedia'][0].source_url} 
                       alt={post._embedded['wp:featuredmedia'][0].alt_text || post.title.rendered}
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
-                  </div>
-                )}
-                <div className="p-6 flex flex-col flex-grow">
+                  )}
+                </div>
+                <div className="p-6 md:w-2/3 flex flex-col">
                   <h3 className="text-xl font-bold mb-2" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
                   <div className="text-sm text-gray-500 mb-4">
                     {post._embedded?.author?.[0]?.name && (
@@ -134,14 +197,13 @@ const Contents = () => {
                     className="text-gray-600 mb-6 flex-grow line-clamp-3"
                     dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
                   />
-                  <a 
-                    href={post.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-point hover:bg-point/90 text-white px-4 py-2 rounded inline-block mt-auto"
-                  >
-                    Read More
-                  </a>
+                  <div className="mt-auto">
+                    <Button 
+                      className="bg-point hover:bg-point/90 text-white"
+                    >
+                      Read More
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

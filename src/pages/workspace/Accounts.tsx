@@ -59,6 +59,20 @@ const WorkspaceAccounts = () => {
     }
   };
   
+  const handleManageUser = async (userId: number) => {
+    try {
+      const url = await getWordPressUserEditUrl(userId);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        toast.error("Failed to get WordPress user URL");
+      }
+    } catch (error) {
+      console.error("Error getting WordPress user URL:", error);
+      toast.error("Failed to open WordPress admin");
+    }
+  };
+  
   const getInitials = (name?: string) => {
     if (!name) return 'U';
     return name
@@ -80,7 +94,20 @@ const WorkspaceAccounts = () => {
         </div>
         
         <Button 
-          onClick={() => window.open('https://britannia.co.kr/wp-admin/user-new.php', '_blank')}
+          onClick={async () => {
+            try {
+              const url = await getWordPressUserEditUrl(0);
+              if (url) {
+                const baseUrl = url.split('?')[0].replace('user-edit.php', 'user-new.php');
+                window.open(baseUrl, '_blank');
+              } else {
+                toast.error("Failed to get WordPress admin URL");
+              }
+            } catch (error) {
+              console.error("Error opening WordPress admin:", error);
+              toast.error("Failed to open WordPress admin");
+            }
+          }}
           className="bg-point hover:bg-point/90 text-white"
         >
           Create User in WordPress
@@ -162,7 +189,7 @@ const WorkspaceAccounts = () => {
                         variant="outline"
                         size="sm"
                         className="flex items-center gap-1"
-                        onClick={() => window.open(getWordPressUserEditUrl(user.id), '_blank')}
+                        onClick={() => handleManageUser(user.id)}
                       >
                         <ExternalLink className="h-4 w-4 mr-1" /> Manage
                       </Button>

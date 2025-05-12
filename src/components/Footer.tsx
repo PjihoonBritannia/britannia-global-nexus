@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
@@ -27,46 +28,6 @@ const Footer: React.FC<FooterProps> = ({
   const location = useLocation();
   const isWorkspace = location.pathname.startsWith('/workspace');
 
-  useEffect(() => {
-    // Try to find the footer navigation container
-    const footerNavContainer = document.querySelector('.footer-nav-container');
-    
-    if (footerNavContainer) {
-      // Look for the existing footer tab groups
-      const tabGroups = footerNavContainer.querySelectorAll('.footer-tab-group');
-      
-      if (tabGroups.length > 0) {
-        // Create the Management tab group
-        const managementTabGroup = document.createElement('div');
-        managementTabGroup.className = 'footer-tab-group';
-        
-        // Create the tab heading
-        const heading = document.createElement('h3');
-        heading.className = 'text-base font-semibold text-white mb-4';
-        heading.textContent = 'Management';
-        managementTabGroup.appendChild(heading);
-        
-        // Create the links container
-        const linksContainer = document.createElement('ul');
-        linksContainer.className = 'space-y-2';
-        
-        // Create the Login link
-        const loginItem = document.createElement('li');
-        const loginLink = document.createElement('a');
-        loginLink.href = '/workspace/login';
-        loginLink.className = 'text-gray-300 hover:text-white transition-colors';
-        loginLink.textContent = 'Login';
-        loginItem.appendChild(loginLink);
-        linksContainer.appendChild(loginItem);
-        
-        managementTabGroup.appendChild(linksContainer);
-        
-        // Append the new tab group to the footer navigation container
-        footerNavContainer.appendChild(managementTabGroup);
-      }
-    }
-  }, []);
-
   if (isWorkspace) {
     return null;
   }
@@ -74,9 +35,9 @@ const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="bg-gray-800 text-white py-12 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 footer-nav-container">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {footerTabs.map((tab, index) => (
-            <div key={index} className="footer-tab-group">
+            <div key={index}>
               <h3 className="text-base font-semibold text-white mb-4">{tab.title}</h3>
               <ul className="space-y-2">
                 {tab.links.map((link, linkIndex) => (
@@ -104,6 +65,16 @@ const Footer: React.FC<FooterProps> = ({
                 </a>
               ))}
             </div>
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-white mb-4">Management</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/workspace/login" className="text-gray-300 hover:text-white transition-colors">
+                  Login
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="mt-12 border-t border-gray-700 pt-8">

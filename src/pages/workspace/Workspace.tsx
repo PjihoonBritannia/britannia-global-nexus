@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   SidebarProvider,
@@ -18,10 +18,14 @@ import { LayoutDashboard, Users, FileText, Settings, LogOut, ArrowLeft } from 'l
 const Workspace = () => {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // Determine if we're on the settings page to apply wider layout
+  const isSettingsPage = location.pathname.includes('/workspace/settings');
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -123,7 +127,7 @@ const Workspace = () => {
           </SidebarContent>
         </Sidebar>
         
-        <SidebarInset className="p-6">
+        <SidebarInset className={`p-6 ${isSettingsPage ? 'w-full max-w-[1200px]' : ''}`}>
           <Outlet />
         </SidebarInset>
       </div>

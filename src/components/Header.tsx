@@ -1,12 +1,16 @@
+
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isScrolled, setIsScrolled] = useState(false);
 	const location = useLocation();
+	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
@@ -35,6 +39,11 @@ const Header = () => {
 	useEffect(() => {
 		setIsMenuOpen(false);
 	}, [location]);
+	
+	// Handle workspace button click
+	const handleWorkspaceClick = () => {
+		navigate('/workspace');
+	};
 
 	return (
 		<header
@@ -139,9 +148,30 @@ const Header = () => {
 					>
 						Careers
 					</Link>
-					<Button className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'>
-						Contact Us
-					</Button>
+					<Link
+						to='/contents'
+						className={`font-light link-underline transition-colors duration-200 ${
+							isScrolled || (isMenuOpen && !isScrolled)
+								? location.pathname === '/contents'
+									? 'text-point'
+									: 'text-base-dark'
+								: 'text-white hover:text-white/80'
+						}`}
+					>
+						Contents
+					</Link>
+					{user ? (
+						<Button 
+							className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'
+							onClick={handleWorkspaceClick}
+						>
+							Workspace
+						</Button>
+					) : (
+						<Button className='bg-point hover:bg-point/90 text-white rounded-[15px] hover:shadow-lg transition-shadow duration-300'>
+							Contact Us
+						</Button>
+					)}
 				</nav>
 
 				{/* Mobile Menu Button */}
@@ -228,12 +258,35 @@ const Header = () => {
 						>
 							Careers
 						</Link>
-						<Button
-							className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
+						<Link
+							to='/contents'
+							className={`font-light hover:text-point p-2 transition-all duration-200 ${
+								location.pathname === '/contents'
+									? 'text-point translate-x-2'
+									: 'text-base-dark'
+							}`}
 							onClick={() => setIsMenuOpen(false)}
 						>
-							Contact Us
-						</Button>
+							Contents
+						</Link>
+						{user ? (
+							<Button
+								className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
+								onClick={() => {
+									setIsMenuOpen(false);
+									navigate('/workspace');
+								}}
+							>
+								Workspace
+							</Button>
+						) : (
+							<Button
+								className='bg-point hover:bg-point/90 text-white w-full rounded-[15px] hover:shadow-lg transition-all duration-300'
+								onClick={() => setIsMenuOpen(false)}
+							>
+								Contact Us
+							</Button>
+						)}
 					</nav>
 				</div>
 			)}

@@ -92,6 +92,20 @@ const WorkspaceContents = () => {
     }
   };
   
+  const handleManagePost = async (postId: number) => {
+    try {
+      const url = await getWordPressPostEditUrl(postId);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        toast.error("Failed to get WordPress post URL");
+      }
+    } catch (error) {
+      console.error("Error getting WordPress post URL:", error);
+      toast.error("Failed to open WordPress admin");
+    }
+  };
+  
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'MMM d, yyyy');
@@ -134,7 +148,20 @@ const WorkspaceContents = () => {
         </div>
         
         <Button 
-          onClick={() => window.open('https://britannia.co.kr/wp-admin/post-new.php', '_blank')}
+          onClick={async () => {
+            try {
+              const url = await getWordPressPostEditUrl(0);
+              if (url) {
+                const baseUrl = url.split('?')[0].replace('post.php', 'post-new.php');
+                window.open(baseUrl, '_blank');
+              } else {
+                toast.error("Failed to get WordPress admin URL");
+              }
+            } catch (error) {
+              console.error("Error opening WordPress admin:", error);
+              toast.error("Failed to open WordPress admin");
+            }
+          }}
           className="bg-point hover:bg-point/90 text-white"
         >
           Create Post in WordPress
@@ -200,7 +227,7 @@ const WorkspaceContents = () => {
                         variant="outline"
                         size="sm"
                         className="flex items-center gap-1"
-                        onClick={() => window.open(getWordPressPostEditUrl(post.id), '_blank')}
+                        onClick={() => handleManagePost(post.id)}
                       >
                         <ExternalLink className="h-4 w-4 mr-1" /> Manage
                       </Button>

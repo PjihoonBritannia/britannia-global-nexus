@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +13,8 @@ import Media from "./pages/Media";
 import Esg from "./pages/Esg";
 import Careers from "./pages/Careers";
 import UkProperty from "./pages/UkProperty";
-import Contents from "./pages/Contents"; // Import the new Contents page
+import Contents from "./pages/Contents";
+import ContentPost from "./pages/ContentPost"; // Import the new ContentPost component
 import NotFound from "./pages/NotFound";
 import Login from "./pages/workspace/Login";
 import Workspace from "./pages/workspace/Workspace";
@@ -96,7 +98,8 @@ const AppRoutes = () => {
         <Route path="/media" element={<Media />} />
         <Route path="/esg" element={<Esg />} />
         <Route path="/careers" element={<Careers />} />
-        <Route path="/contents" element={<Contents />} /> {/* Add the new Contents route */}
+        <Route path="/contents" element={<Contents />} />
+        <Route path="/contents/:slug" element={<ContentPost />} /> {/* Add route for individual posts */}
         <Route path="/workspace/login" element={<Login />} />
         
         {/* Protected Workspace Routes */}
